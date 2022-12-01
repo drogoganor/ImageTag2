@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="ImageTagWPF.Controls.OrganizeTree"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ImageTagWPF.Controls"
+             xmlns:self="clr-namespace:ImageTagWPF.Model"
+             xmlns:data="clr-namespace:ImageTagWPF.Data"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="345">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TreeView x:Name="FileTree" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch"
+                  Grid.Row="1" SelectedItemChanged="FileTree_OnSelectedItemChanged">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type data:OrganizeDirectory}" ItemsSource="{Binding ChildDirectories}">
+                    <TextBlock Text="{Binding Name}" Foreground="{Binding ForeColor}" />
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+
+        </TreeView>
+        
+        
+        <Grid Grid.Row="0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="85" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+
+                <Label x:Name="label" Content="Directory:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <TextBox x:Name="DirectoryTextBox" HorizontalAlignment="Stretch" Height="23" Margin="0,26,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top"
+                 IsReadOnly="true"/>
+
+
+
+            </Grid>
+            <Button x:Name="PickButton" Content="Pick" Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,26,5,0" VerticalAlignment="Top" Height="23"/>
+
+            <Grid Grid.Column="0" Grid.ColumnSpan="2">
+                <Button x:Name="MoveUpButton" Content="Move Up" HorizontalAlignment="Left" Margin="0,57,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="MoveUpButton_Click"/>
+                <Button x:Name="MoveDownButton" Content="Move Down" HorizontalAlignment="Left" Margin="80,57,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="MoveDownButton_Click"/>
+                <Button x:Name="MoveTopButton" IsEnabled="False" Content="Move to Top" HorizontalAlignment="Left" Margin="160,57,0,0" VerticalAlignment="Top" Width="75" Height="23" Click="MoveToTopButton_Click"/>
+                <Button x:Name="MoveBottomButton" IsEnabled="False" Content="Move to Bottom" HorizontalAlignment="Left" Margin="240,57,0,0" VerticalAlignment="Top" Width="100" Height="23" Click="MoveToBottomButton_Click"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
