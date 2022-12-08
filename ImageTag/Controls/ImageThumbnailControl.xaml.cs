@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ImageTag.Code;
 using ImageTag.Model;
 using Path = System.IO.Path;
 
@@ -24,8 +25,12 @@ namespace ImageTag.Controls
     /// </summary>
     public partial class ImageThumbnailControl : UserControl
     {
-        public ImageThumbnailControl()
+        private readonly ImageTagSettings settings;
+
+        public ImageThumbnailControl(ImageTagSettings settings)
         {
+            this.settings = settings;
+
             InitializeComponent();
         }
 
@@ -34,7 +39,7 @@ namespace ImageTag.Controls
             var file = this.DataContext as ImageFileThumbData;
             if (file != null && File.Exists(file.FullPath))
             {
-                var programRecord = App.ImageTag.Settings.Extensions.FirstOrDefault(x => file.FullPath.EndsWith(x.Extension.Substring(1)));
+                var programRecord = settings.Extensions.FirstOrDefault(x => file.FullPath.EndsWith(x.Extension.Substring(1)));
                 if (programRecord != null && File.Exists(programRecord.ViewerProgram))
                 {
                     if (!String.IsNullOrEmpty(programRecord.ViewerProgram))

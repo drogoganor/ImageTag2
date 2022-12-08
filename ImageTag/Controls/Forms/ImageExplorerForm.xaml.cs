@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,7 +15,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
+using ImageTag.Data;
 using ImageTag.Model;
+using Microsoft.Extensions.Logging;
 
 namespace ImageTag.Controls.Forms
 {
@@ -36,9 +39,16 @@ namespace ImageTag.Controls.Forms
         protected bool IsUpdating = false;
         protected List<TagModel> LastSelectedTags = new List<TagModel>();
 
+        private readonly ILogger<ImageExplorerForm> logger;
+        private readonly ImageTagContext context;
 
-        public ImageExplorerForm()
+        public ImageExplorerForm(
+            ILogger<ImageExplorerForm> logger,
+            ImageTagContext context)
         {
+            this.logger = logger;
+            this.context = context;
+
             InitializeComponent();
 
             TagSelectControl.RatingControl.IsEnabled = false;
@@ -75,15 +85,15 @@ namespace ImageTag.Controls.Forms
                         imageList.Add(tempItem);
                 }
 
-                Util.UpdateImageTags(imageList, new List<TagModel>() { selecteditem}, App.CancellationTokenSource.Token, addOnly:true);
+                Util.UpdateImageTags(context, imageList, new List<TagModel>() { selecteditem}, new CancellationToken(), addOnly:true);
 
                 try
                 {
-                    App.ImageTag.Entities.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Couldn't tag images: " + ex.Message);
+                    logger.LogError("Couldn't tag images: " + ex.Message);
                     throw ex;
                 }
             }
@@ -91,6 +101,8 @@ namespace ImageTag.Controls.Forms
 
         private void TagSelectControl_OnOnSelectionChanged(List<TagModel> tags)
         {
+            var token = new CancellationToken();
+
             if (IsUpdating)
                 return;
 
@@ -138,20 +150,20 @@ namespace ImageTag.Controls.Forms
                     var removedTags = LastSelectedTags.Where(x => !tagIDs.Contains((int)x.Tag.ID)).ToList();
 
                     Util.RemoveImageTags(imageList, removedTags);
-                    Util.UpdateImageTags(imageList, tags, App.CancellationTokenSource.Token, addOnly: true);
+                    Util.UpdateImageTags(context, imageList, tags, token, addOnly: true);
 
                     LastSelectedTags = tags;
                 }
                 else
-                    Util.UpdateImageTags(imageList, tags, App.CancellationTokenSource.Token);
+                    Util.UpdateImageTags(context, imageList, tags, token);
 
                 try
                 {
-                    App.ImageTag.Entities.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Couldn't tag images: " + ex.Message);
+                    logger.LogError("Couldn't tag images: " + ex.Message);
                     throw ex;
                 }
 
@@ -171,10 +183,10 @@ namespace ImageTag.Controls.Forms
                 var searchTags = text.Split(new[] { ' ' });
 
                 // Get matching tags
-                var matchingTags = App.ImageTag.Entities.Tags.Where(x => searchTags.Contains(x.Name));
+                var matchingTags = context.Tags.Where(x => searchTags.Contains(x.Name));
 
                 // Any image that has all of the tags fulfilled
-                var searchCollection = App.ImageTag.Entities.Images
+                var searchCollection = context.Images
                     .Where(images =>
                     matchingTags.All(t =>
                                 images.Tags.Any(mt => mt.ID == t.ID)));
@@ -212,7 +224,7 @@ namespace ImageTag.Controls.Forms
             bool unratedOnly = UnratedOnlyCheckbox.IsChecked.Value;
 
             // Any image that has all of the tags fulfilled
-            var searchCollection = App.ImageTag.Entities.Images
+            var searchCollection = context.Images
 
                 // Tags AND/OR filtering
                 .Where(images =>
@@ -428,15 +440,15 @@ namespace ImageTag.Controls.Forms
                         imageList.Add(tempItem);
                 }
 
-                Util.UpdateImageRating(imageList, rating);
+                Util.UpdateImageRating(context, imageList, rating);
 
                 try
                 {
-                    App.ImageTag.Entities.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Couldn't update rating of images: " + ex.Message);
+                    logger.LogError("Couldn't update rating of images: " + ex.Message);
                     throw ex;
                 }
             }

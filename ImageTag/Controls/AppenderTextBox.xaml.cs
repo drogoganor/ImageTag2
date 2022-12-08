@@ -15,7 +15,7 @@ namespace ImageTag.Controls
 
         public AppenderTextBox()
         {
-            //InitializeComponent();
+            InitializeComponent();
 
             //var root = ((log4net.Repository.Hierarchy.Hierarchy)LogManager.GetRepository()).Root;
             //var attachable = root as IAppenderAttachable;

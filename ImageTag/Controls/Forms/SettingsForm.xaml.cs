@@ -8,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -26,17 +25,16 @@ namespace ImageTag.Controls.Forms
     /// </summary>
     public partial class SettingsForm : UserControl
     {
-        //public ImageTagSettings Settings;
+        private readonly ImageTagSettings settings;
 
-        public SettingsForm()
+        public SettingsForm(ImageTagSettings settings)
         {
+            this.settings = settings;
             InitializeComponent();
         }
 
         public void Initialize()
         {
-            var settings = App.ImageTag.Settings;
-
             if (settings != null)
             {
                 DefaultDirectoryTextBox.Text = settings.DefaultDirectory;
@@ -50,8 +48,6 @@ namespace ImageTag.Controls.Forms
 
         private void SaveButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var settings = App.ImageTag.Settings;
-
             if (settings != null)
             {
                 settings.DefaultDirectory = DefaultDirectoryTextBox.Text;
@@ -89,8 +85,8 @@ namespace ImageTag.Controls.Forms
 
                 settings.Extensions = exts;
 
-                var path = Path.Combine(Environment.CurrentDirectory, ImageTag.SettingsName);
-                settings.SaveToXml(path);
+                //var path = Path.Combine(Environment.CurrentDirectory, ImageTag.SettingsName);
+                //settings.SaveToXml(path);
             }
         }
 
@@ -99,9 +95,6 @@ namespace ImageTag.Controls.Forms
             var extText = ExtensionTextBox.Text.Trim();
             if (!String.IsNullOrEmpty(extText))
             {
-                var settings = App.ImageTag.Settings;
-
-
                 var matchingExtension = settings.Extensions.FirstOrDefault(x => x.Extension == extText);
                 if (matchingExtension != null)
                 {
@@ -131,8 +124,6 @@ namespace ImageTag.Controls.Forms
         {
             if (ExtensionListBox.SelectedValue != null)
             {
-                var settings = App.ImageTag.Settings;
-
                 var selString = ExtensionListBox.SelectedValue as ImageExtensionViewerProgram;
                 settings.Extensions.Remove(selString);
 
@@ -143,18 +134,18 @@ namespace ImageTag.Controls.Forms
 
         private void DirectoryPickButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new FolderBrowserDialog()
-            {
-                Description = "Select root directory",
-                SelectedPath = Environment.CurrentDirectory
-            };
-            var result = dialog.ShowDialog();
+            //var dialog = new FolderBrowserDialog()
+            //{
+            //    Description = "Select root directory",
+            //    SelectedPath = Environment.CurrentDirectory
+            //};
+            //var result = dialog.ShowDialog();
 
-            if (result == DialogResult.OK &&
-                Directory.Exists(dialog.SelectedPath))
-            {
-                DefaultDirectoryTextBox.Text = dialog.SelectedPath;
-            }
+            //if (result == DialogResult.OK &&
+            //    Directory.Exists(dialog.SelectedPath))
+            //{
+            //    DefaultDirectoryTextBox.Text = dialog.SelectedPath;
+            //}
         }
 
         private void ExtensionListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -171,7 +162,7 @@ namespace ImageTag.Controls.Forms
             if (selItem != null)
             {
                 CategoryLabel.Content = selItem.TagType.ToString();
-                ColorPickRow.SetColor(selItem.FontColor);
+                //ColorPickRow.SetColor(selItem.FontColor);
             }
         }
     }

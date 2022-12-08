@@ -55,7 +55,7 @@ namespace ImageTag.Code
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Couldn't create temporary directory: " + this.TempDirectory + " : " + ex.Message);
+                    //App.Log.Error("Couldn't create temporary directory: " + this.TempDirectory + " : " + ex.Message);
                     this.TempDirectory = Path.GetTempPath();
                 }
             }

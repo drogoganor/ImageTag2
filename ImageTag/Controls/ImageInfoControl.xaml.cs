@@ -31,8 +31,13 @@ namespace ImageTag.Controls
 
         public string Path;
 
-        public ImageInfoControl()
+        private readonly ImageTagSettings settings;
+
+        public ImageInfoControl(
+            ImageTagSettings settings)
         {
+            this.settings = settings;
+
             InitializeComponent();
         }
 
@@ -123,7 +128,7 @@ namespace ImageTag.Controls
             var file = PathTextBlock.Text;
             if (!String.IsNullOrEmpty(file) && File.Exists(file))
             {
-                var programRecord = App.ImageTag.Settings.Extensions.FirstOrDefault(x => file.EndsWith(x.Extension.Substring(1)));
+                var programRecord = settings.Extensions.FirstOrDefault(x => file.EndsWith(x.Extension.Substring(1)));
                 if (programRecord != null && File.Exists(programRecord.ViewerProgram))
                 {
                     if (!String.IsNullOrEmpty(programRecord.ViewerProgram))

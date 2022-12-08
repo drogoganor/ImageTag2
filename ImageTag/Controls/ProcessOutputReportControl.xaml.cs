@@ -16,6 +16,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
 using ImageTag.Controls.Windows;
+using ImageTag.Data;
+using Microsoft.Extensions.Logging;
 using Path = System.IO.Path;
 
 namespace ImageTag.Controls
@@ -28,9 +30,15 @@ namespace ImageTag.Controls
         protected ProcessOperation Process;
         protected ProcessOutputReport Report;
 
+        private readonly ImageTagContext context;
+        private readonly ILogger<ProcessOutputReportControl> logger;
 
-        public ProcessOutputReportControl()
+        public ProcessOutputReportControl(
+            ILogger<ProcessOutputReportControl> logger,
+            ImageTagContext context)
         {
+            this.logger = logger;
+            this.context = context;
             InitializeComponent();
         }
 
@@ -60,8 +68,8 @@ namespace ImageTag.Controls
 
         private void AttemptResolutionButton_Click(object sender, RoutedEventArgs e)
         {
-            if (App.CheckForProcessingItems())
-                return;
+            //if (App.CheckForProcessingItems())
+            //    return;
 
             if (Process != null)
             {
@@ -81,7 +89,7 @@ namespace ImageTag.Controls
                             // Keep both
                             if (renameOne)
                             {
-                                var targetImage = App.ImageTag.Entities.Images.FirstOrDefault(x => x.Path.Trim().ToLower() == result);
+                                var targetImage = context.Images.FirstOrDefault(x => x.Path.Trim().ToLower() == result);
 
                                 if (targetImage != null && File.Exists(targetImage.Path))
                                 {
@@ -90,17 +98,17 @@ namespace ImageTag.Controls
                                                   + " " + Path.GetRandomFileName().Substring(0, 6)
                                                   + suffix;
                                     
-                                    if (!Util.RetryMove(targetImage.Path, newPath))
+                                    if (!Util.RetryMove(logger, targetImage.Path, newPath))
                                     {
-                                        App.Log.Error("Couldn't move file: " + targetImage.Path + " to " + newPath);
+                                        logger.LogError("Couldn't move file: " + targetImage.Path + " to " + newPath);
                                         return;
                                     }
                                     
                                     targetImage.Path = newPath;
                                 
-                                    App.ImageTag.Entities.SaveChanges();
+                                    context.SaveChanges();
 
-                                    App.Log.Info("Saved renamed file as: " + newPath);
+                                    logger.LogInformation("Saved renamed file as: " + newPath);
                                 }
                             }
 
@@ -114,8 +122,8 @@ namespace ImageTag.Controls
                                : Process.SourceFilename;
                             discardedImageName = discardedImageName.Trim().ToLowerInvariant();
 
-                            var targetImage = App.ImageTag.Entities.Images.FirstOrDefault(x => x.Path.Trim().ToLower() == result);
-                            var discardedImage = App.ImageTag.Entities.Images.FirstOrDefault(x => x.Path.Trim().ToLower() == discardedImageName);
+                            var targetImage = context.Images.FirstOrDefault(x => x.Path.Trim().ToLower() == result);
+                            var discardedImage = context.Images.FirstOrDefault(x => x.Path.Trim().ToLower() == discardedImageName);
 
                             if (targetImage != null && discardedImage != null)
                             {
@@ -133,20 +141,20 @@ namespace ImageTag.Controls
 
 
 
-                                App.ImageTag.Entities.Images.Remove(discardedImage);
+                                context.Images.Remove(discardedImage);
 
-                                App.ImageTag.Entities.SaveChanges();
+                                context.SaveChanges();
 
-                                App.Log.Info("Removed image from DB: " + discardedImage.Path);
+                                logger.LogInformation("Removed image from DB: " + discardedImage.Path);
                                 
                                 try
                                 {
                                     File.Delete(discardedImage.Path);
-                                    App.Log.Info("Deleted image file: " + discardedImage.Path);
+                                    logger.LogInformation("Deleted image file: " + discardedImage.Path);
                                 }
                                 catch (Exception ex)
                                 {
-                                    App.Log.Error("Error deleting image file: " + discardedImage.Path + ": " + ex.Message);
+                                    logger.LogError("Error deleting image file: " + discardedImage.Path + ": " + ex.Message);
                                     throw ex;
                                 }
 
@@ -180,7 +188,7 @@ namespace ImageTag.Controls
                             }
                             else
                             {
-                                App.Log.Error("Error: Either target image or discarded image couldn't be found: " + result +
+                                logger.LogError("Error: Either target image or discarded image couldn't be found: " + result +
                                               ", " + discardedImageName);
                                 return;
                             }

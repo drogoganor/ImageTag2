@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,6 +11,7 @@ using System.Windows.Media.Imaging;
 using ImageTag.Controls;
 using ImageTag.Data;
 using ImageTag.Model;
+using Microsoft.Extensions.Logging;
 using Color = System.Windows.Media.Color;
 using Image = ImageTag.Data.Image;
 
@@ -35,65 +37,67 @@ namespace ImageTag.Code
         public ImageTagContext Context;
 
         public ImageTagSettings Settings;
+        public ILogger<ImageTag> logger;
 
         public ProcessOutputReport FileProcessData;
 
         protected OrganizeFilesManifest OrganizeFilesManifest;
 
-        public ImageTag(ImageTagContext context)
+        public ImageTag(
+            ILogger<ImageTag> logger,
+            ImageTagContext context,
+            ImageTagSettings settings)
         {
             Context = context;
+            Settings = settings;
+            this.logger = logger;
 
             // Load settings
-            var settingsPath = Path.Combine(Environment.CurrentDirectory, SettingsName);
-            if (File.Exists(settingsPath))
-            {
-                Settings = ImageTagSettings.LoadFromXml(settingsPath);
-            }
-            else
-            {
-                Settings = new ImageTagSettings();
-                Settings.InitializeDefaults();
-                Settings.SaveToXml(SettingsName);
-            }
+            //var settingsPath = Path.Combine(Environment.CurrentDirectory, SettingsName);
+            //if (File.Exists(settingsPath))
+            //{
+            //    Settings = ImageTagSettings.LoadFromXml(settingsPath);
+            //}
+            //else
+            //{
+            //    Settings = new ImageTagSettings();
+            //    Settings.InitializeDefaults();
+            //    Settings.SaveToXml(SettingsName);
+            //}
 
             Settings.InitializeDirectories();
         }
 
         public void Initialize()
         {
-            var dbPath = Path.Combine(Environment.CurrentDirectory, ImageTagDbName);
-            if (!File.Exists(dbPath))
-            {
+            //var dbPath = Path.Combine(Environment.CurrentDirectory, ImageTagDbName);
+            //if (!File.Exists(dbPath))
+            //{
 
-                // Create it!
-                var bytes = ImageTagWPF.Properties.Resources.imagetag;
+            //    // Create it!
+            //    var bytes = ImageTag.Properties.Resources.imagetag;
 
-                try
-                {
-                    File.WriteAllBytes(dbPath, bytes);
-                }
-                catch (Exception ex)
-                {
-                    App.Log.Error("Error writing new DB: " + ex.Message);
-                    return;
-                }
-            }
+            //    try
+            //    {
+            //        File.WriteAllBytes(dbPath, bytes);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        logger.LogError("Error writing new DB: " + ex.Message);
+            //        return;
+            //    }
+            //}
 
-            try
-            {
-                Entities = new ImageTagEntities();
-            }
-            catch (Exception ex)
-            {
-                App.Log.Error("Error creating DbContext: " + ex.Message);
-                return;
-            }
-
-
+            //try
+            //{
+            //    Entities = new ImageTagEntities();
+            //}
+            //catch (Exception ex)
+            //{
+            //    logger.LogError("Error creating DbContext: " + ex.Message);
+            //    return;
+            //}
         }
-
-
 
         public void Enqueue(ImageTagDispatchItem item)
         {
@@ -128,7 +132,7 @@ namespace ImageTag.Code
                 //var result = Thread.Join(MillisecondsTimeout);
                 if (!result)
                 {
-                    //App.Log.Error("Couldn't stop task after " + MillisecondsTimeout/1000 +
+                    //logger.LogError("Couldn't stop task after " + MillisecondsTimeout/1000 +
                     //              " seconds. Waiting indefinitely...");
 
                     //Thread.Join();
@@ -160,15 +164,15 @@ namespace ImageTag.Code
 
                         //ThreadPool.QueueUserWorkItem(new WaitCallback(state => { item.Action(); }), token);
 
-                        //App.Log.Info("Executed task " + item.Description + " OK.");
+                        //logger.LogInformation("Executed task " + item.Description + " OK.");
 
                         item.IsRunning = false;
                         OnFinishItem?.Invoke(item);
                         
                         item.Finish();
 
-                        App.CancellationTokenSource.Dispose();
-                        App.CancellationTokenSource = new CancellationTokenSource();
+                        //App.CancellationTokenSource.Dispose();
+                        //App.CancellationTokenSource = new CancellationTokenSource();
                     }
                 }
             }
@@ -189,10 +193,10 @@ namespace ImageTag.Code
 
         public void SaveSettings()
         {
-            if (Settings != null)
-            {
-                Settings.SaveToXml(SettingsName);
-            }
+            //if (Settings != null)
+            //{
+            //    Settings.SaveToXml(SettingsName);
+            //}
         }
 
 
@@ -200,24 +204,21 @@ namespace ImageTag.Code
         {
             try
             {
-                App.ImageTag.Entities.SaveChanges();
-                App.Log.Info("Saved to database OK.");
+                Context.SaveChanges();
+                logger.LogInformation("Saved to database OK.");
             }
             catch (Exception ex)
             {
                 var msg = "Error saving to database: " + ex.Message;
-                App.Log.Error(msg);
+                logger.LogError(msg);
 
                 MessageBox.Show(msg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-
-
-
         public void OrganizeImages(bool suppressSuccessMessages = false)
         {
-            var rootDir = App.ImageTag.Entities.OrganizeDirectories.FirstOrDefault(x => x.ParentDirectories.Count == 0);
+            var rootDir = Context.OrganizeDirectories.FirstOrDefault(x => x.ParentDirectories.Count == 0);
             if (rootDir != null)
             {
                 if (!Directory.Exists(rootDir.Name))
@@ -228,7 +229,7 @@ namespace ImageTag.Code
                     }
                     catch (Exception ex)
                     {
-                        App.Log.Error("Couldn't create root directory: " + rootDir.Name + " : " + ex.Message);
+                        logger.LogError("Couldn't create root directory: " + rootDir.Name + " : " + ex.Message);
                         return;
                     }
                 }
@@ -241,29 +242,29 @@ namespace ImageTag.Code
                 OrganizeFilesManifest = new OrganizeFilesManifest();
 
 
-                App.Log.Info(" ");
-                App.Log.Info("================================================");
-                App.Log.Info("Organizing images for directory: " + rootDir.Name);
-                App.Log.Info("================================================");
+                logger.LogInformation(" ");
+                logger.LogInformation("================================================");
+                logger.LogInformation("Organizing images for directory: " + rootDir.Name);
+                logger.LogInformation("================================================");
 
 
 
 
 
-                App.Log.Info("Organizing images...");
+                logger.LogInformation("Organizing images...");
 
                 ClearCopyDirectories();
 
 
-                //OrganizeImagesForDir(rootDir, string.Empty, App.ImageTag.Entities.Images, suppressSuccessMessages);
+                //OrganizeImagesForDir(rootDir, string.Empty, Context.Images, suppressSuccessMessages);
 
-                GetOrganizeManifestForDir(rootDir, string.Empty, App.ImageTag.Entities.Images);
+                GetOrganizeManifestForDir(rootDir, string.Empty, Context.Images);
                 
                 OrganizeImagesForManifest(OrganizeFilesManifest, suppressSuccessMessages);
 
                 PersistData();
 
-                App.Log.Info("Finished organizing files.");
+                logger.LogInformation("Finished organizing files.");
 
             }
         }
@@ -310,7 +311,7 @@ namespace ImageTag.Code
                 if (dir.IgnoreParent != 0)
                 {
                     // Get from all images
-                    cumulativeQuery = App.ImageTag.Entities.Images;
+                    cumulativeQuery = Context.Images;
                 }
 
                 // Filter by rating
@@ -341,7 +342,6 @@ namespace ImageTag.Code
                     }
 
                 }
-
 
                 foreach (var imageResult in imageResults)
                 {
@@ -383,7 +383,7 @@ namespace ImageTag.Code
                     {
                         // Couldn't find image in db                    
                         msg = "Couldn't find image in DB: " + imageResult.Path;
-                        App.Log.Error(msg);
+                        logger.LogError(msg);
 
                         FileProcessData.Operations.Add(new ProcessOperation()
                         {
@@ -425,7 +425,7 @@ namespace ImageTag.Code
                 if (dir.IgnoreParent != 0)
                 {
                     // Get from all images
-                    cumulativeQuery = App.ImageTag.Entities.Images;
+                    cumulativeQuery = Context.Images;
                 }
 
                 bool useRating = dir.Rating.HasValue;
@@ -456,7 +456,6 @@ namespace ImageTag.Code
 
                 }
 
-
                 foreach (var imageResult in imageResults)
                 {
                     if (File.Exists(imageResult.Path))
@@ -475,12 +474,12 @@ namespace ImageTag.Code
                                 Directory.CreateDirectory(targetDir);
 
                                 if (!suppressSuccessMessages)
-                                    App.Log.Info("Created directory OK: " + targetDir);
+                                    logger.LogInformation("Created directory OK: " + targetDir);
                             }
                             catch (Exception ex)
                             {
                                 msg = "Couldn't create directory: " + targetDir + " : " + ex.Message;
-                                App.Log.Error(msg);
+                                logger.LogError(msg);
 
                                 FileProcessData.Operations.Add(new ProcessOperation()
                                 {
@@ -506,7 +505,7 @@ namespace ImageTag.Code
                                 catch (Exception ex)
                                 {
                                     msg = "Couldn't copy file: " + imageResult.Path + " : " + ex.Message;
-                                    App.Log.Error(msg);
+                                    logger.LogError(msg);
 
                                     FileProcessData.Operations.Add(new ProcessOperation()
                                     {
@@ -525,7 +524,7 @@ namespace ImageTag.Code
                                       String.Join(", ", dir.Tags.Select(x => x.Name).ToArray());
 
                                 if (!suppressSuccessMessages)
-                                    App.Log.Info(msg);
+                                    logger.LogInformation(msg);
 
                                 FileProcessData.Operations.Add(new ProcessOperation()
                                 {
@@ -546,7 +545,7 @@ namespace ImageTag.Code
                                 catch (Exception ex)
                                 {
                                     msg = "Couldn't move file: " + imageResult.Path + " : " + ex.Message;
-                                    App.Log.Error(msg);
+                                    logger.LogError(msg);
 
                                     FileProcessData.Operations.Add(new ProcessOperation()
                                     {
@@ -568,7 +567,7 @@ namespace ImageTag.Code
                                       String.Join(", ", dir.Tags.Select(x => x.Name).ToArray());
 
                                 if (!suppressSuccessMessages)
-                                    App.Log.Info(msg);
+                                    logger.LogInformation(msg);
 
                                 FileProcessData.Operations.Add(new ProcessOperation()
                                 {
@@ -586,7 +585,7 @@ namespace ImageTag.Code
                         {
                             msg = "File already existed: " + targetPath + "\t  from " + imageResult.Path + " .\t Tags: " +
                                   String.Join(", ", dir.Tags.Select(x => x.Name).ToArray());
-                            App.Log.Error(msg);
+                            logger.LogError(msg);
 
                             FileProcessData.Operations.Add(new ProcessOperation()
                             {
@@ -602,7 +601,7 @@ namespace ImageTag.Code
                     else
                     {
                         msg = "Couldn't find image in DB: " + imageResult.Path;
-                        App.Log.Error(msg);
+                        logger.LogError(msg);
 
                         FileProcessData.Operations.Add(new ProcessOperation()
                         {
@@ -622,8 +621,6 @@ namespace ImageTag.Code
                 OrganizeImagesForDir(organizeDirectory, fullPath, cumulativeQuery, suppressSuccessMessages);
             }
         }
-
-
 
         protected void OrganizeImagesForManifest(OrganizeFilesManifest manifest, bool suppressSuccessMessages = false)
         {
@@ -652,12 +649,12 @@ namespace ImageTag.Code
                                 Directory.CreateDirectory(targetDir);
 
                                 if (!suppressSuccessMessages)
-                                    App.Log.Debug("Created directory OK: " + targetDir);
+                                    logger.LogDebug("Created directory OK: " + targetDir);
                             }
                             catch (Exception ex)
                             {
                                 msg = "Couldn't create directory: " + targetDir + " : " + ex.Message;
-                                App.Log.Error(msg);
+                                logger.LogError(msg);
 
                                 FileProcessData.Operations.Add(new ProcessOperation()
                                 {
@@ -684,7 +681,7 @@ namespace ImageTag.Code
                                 {
                                     msg = "Couldn't copy file: " + manifestItem.Image.Path + " to " +
                                           operation.Destination + " : " + ex.Message;
-                                    App.Log.Error(msg);
+                                    logger.LogError(msg);
 
                                     FileProcessData.Operations.Add(new ProcessOperation()
                                     {
@@ -704,7 +701,7 @@ namespace ImageTag.Code
                                 //+ " . Tags: " + String.Join(", ", dir.Tags.Select(x => x.Name).ToArray());
 
                                 if (!suppressSuccessMessages)
-                                    App.Log.Debug(msg);
+                                    logger.LogDebug(msg);
 
                                 FileProcessData.Operations.Add(new ProcessOperation()
                                 {
@@ -726,7 +723,7 @@ namespace ImageTag.Code
                                 {
                                     msg = "Couldn't move file: " + manifestItem.Image.Path + " to " +
                                           operation.Destination + " : " + ex.Message;
-                                    App.Log.Error(msg);
+                                    logger.LogError(msg);
 
                                     FileProcessData.Operations.Add(new ProcessOperation()
                                     {
@@ -747,7 +744,7 @@ namespace ImageTag.Code
                                 //+ " . Tags: " + String.Join(", ", dir.Tags.Select(x => x.Name).ToArray());
 
                                 if (!suppressSuccessMessages)
-                                    App.Log.Debug(msg);
+                                    logger.LogDebug(msg);
 
                                 FileProcessData.Operations.Add(new ProcessOperation()
                                 {
@@ -766,7 +763,7 @@ namespace ImageTag.Code
                             {
                                 // Update directory for object
                                 msg = "File existed on move from " + manifestItem.Image.Path + "  to  " + operation.Destination;
-                                App.Log.Warn(msg);
+                                logger.LogWarning(msg);
 
                                 FileProcessData.Operations.Add(new ProcessOperation()
                                 {
@@ -789,7 +786,7 @@ namespace ImageTag.Code
 
         public void ClearCopyDirectories()
         {
-            var dirs = App.ImageTag.Entities.OrganizeDirectories.Where(x => x.CopyOnly != 0);
+            var dirs = Context.OrganizeDirectories.Where(x => x.CopyOnly != 0);
             foreach (var organizeDirectory in dirs)
             {
                 var fullDir = organizeDirectory.GetFullDirectory();
@@ -797,7 +794,7 @@ namespace ImageTag.Code
                 {
                     string[] filePaths = Directory.GetFiles(fullDir);
                     if (filePaths.Length > 0)
-                        App.Log.Info("Clearing copy directory: " + fullDir);
+                        logger.LogInformation("Clearing copy directory: " + fullDir);
 
                     foreach (string filePath in filePaths)
                     {
@@ -807,7 +804,7 @@ namespace ImageTag.Code
                         }
                         catch (Exception ex)
                         {
-                            App.Log.Error("Couldn't delete file in copy directory: " + fullDir + ": " + ex.Message);
+                            logger.LogError("Couldn't delete file in copy directory: " + fullDir + ": " + ex.Message);
                             throw ex;
                         }
                     }
@@ -817,7 +814,7 @@ namespace ImageTag.Code
 
         public void FindOrphanedRecords()
         {
-            var rootDir = App.ImageTag.Entities.OrganizeDirectories.FirstOrDefault(x => x.ParentDirectories.Count == 0);
+            var rootDir = Context.OrganizeDirectories.FirstOrDefault(x => x.ParentDirectories.Count == 0);
             if (rootDir != null)
             {
                 if (!Directory.Exists(rootDir.Name))
@@ -828,7 +825,7 @@ namespace ImageTag.Code
                     }
                     catch (Exception ex)
                     {
-                        App.Log.Error("Couldn't create root directory: " + rootDir.Name + " : " + ex.Message);
+                        logger.LogError("Couldn't create root directory: " + rootDir.Name + " : " + ex.Message);
                         return;
                     }
                 }
@@ -840,17 +837,17 @@ namespace ImageTag.Code
                 OperationTitle = "Finding orphaned image records"
             };
 
-            App.Log.Info(" ");
-            App.Log.Info("================================================");
-            App.Log.Info("Finding orphaned image records...");
-            App.Log.Info("================================================");
+            logger.LogInformation(" ");
+            logger.LogInformation("================================================");
+            logger.LogInformation("Finding orphaned image records...");
+            logger.LogInformation("================================================");
 
-            foreach (var entitiesImage in App.ImageTag.Entities.Images)
+            foreach (var entitiesImage in Context.Images)
             {
                 if (!File.Exists(entitiesImage.Path))
                 {
                     var msg = "Found orphaned record, looking for matching file: " + entitiesImage.Path;
-                    App.Log.Info(msg);
+                    logger.LogInformation(msg);
 
                     var filename = Path.GetFileName(entitiesImage.Path);
                     var files = Directory.EnumerateFiles(rootDir.Name, filename, SearchOption.AllDirectories);
@@ -863,7 +860,7 @@ namespace ImageTag.Code
                         if (checksum == entitiesImage.Checksum)
                         {
                             msg = "Found matching file, updating: " + file;
-                            App.Log.Info(msg);
+                            logger.LogInformation(msg);
 
                             entitiesImage.Path = file;
                             found = true;
@@ -873,7 +870,7 @@ namespace ImageTag.Code
 
                     if (!found)
                     {
-                        App.Log.Info("Couldn't find matching image for: " + entitiesImage.Path);
+                        logger.LogInformation("Couldn't find matching image for: " + entitiesImage.Path);
 
                         FileProcessData.Operations.Add(new ProcessOperation()
                         {
@@ -886,7 +883,7 @@ namespace ImageTag.Code
                 }
             }
 
-            App.Log.Info("Searched for orphaned records completed.");
+            logger.LogInformation("Searched for orphaned records completed.");
 
             PersistData();
 
@@ -895,30 +892,30 @@ namespace ImageTag.Code
 
         public void UpdateParentTags()
         {
-            App.Log.Info(" ");
-            App.Log.Info("================================================");
-            App.Log.Info("Updating parent tags for ALL images...");
-            App.Log.Info("================================================");
+            logger.LogInformation(" ");
+            logger.LogInformation("================================================");
+            logger.LogInformation("Updating parent tags for ALL images...");
+            logger.LogInformation("================================================");
 
-            foreach (var entitiesImage in App.ImageTag.Entities.Images)
+            foreach (var entitiesImage in Context.Images)
             {
                 Util.UpdateImageParentTags(entitiesImage);
             }
 
             PersistData();
 
-            App.Log.Info("Parent tags for all images updated OK.");
+            logger.LogInformation("Parent tags for all images updated OK.");
         }
 
         public void ConsolidateDuplicateFiles(bool ignoreFilename = false, bool deleteFileToo = false)
         {
 
-            App.Log.Info(" ");
-            App.Log.Info("================================================");
-            App.Log.Info("Consolidating records with duplicate checksum and filename");
-            App.Log.Info("================================================");
+            logger.LogInformation(" ");
+            logger.LogInformation("================================================");
+            logger.LogInformation("Consolidating records with duplicate checksum and filename");
+            logger.LogInformation("================================================");
 
-            var dupeChecksums = from i in App.ImageTag.Entities.Images
+            var dupeChecksums = from i in Context.Images
                 group i by new {i.Checksum}
                 into grp
                 where grp.Count() > 1
@@ -926,7 +923,7 @@ namespace ImageTag.Code
 
             foreach (var checksum in dupeChecksums)
             {
-                var images = App.ImageTag.Entities.Images.Where(x => x.Checksum == checksum.Checksum).ToList();
+                var images = Context.Images.Where(x => x.Checksum == checksum.Checksum).ToList();
 
                 var imageName = string.Empty;
                 var fullImagePath = string.Empty;
@@ -944,7 +941,7 @@ namespace ImageTag.Code
                         }
                         else if (thisFilename != imageName.ToLowerInvariant())
                         {
-                            App.Log.Error("Found dupe file with different filenames, continuing: " + image.Path + ", " +
+                            logger.LogError("Found dupe file with different filenames, continuing: " + image.Path + ", " +
                                           fullImagePath);
                             allSameFilename = false;
                             break;
@@ -958,7 +955,7 @@ namespace ImageTag.Code
                     // consolidate tags
                     var firstImage = images[0];
 
-                    App.Log.Info("Removing duplicate records for: " + firstImage.Path);
+                    logger.LogInformation("Removing duplicate records for: " + firstImage.Path);
 
                     var removeList = new List<Image>();
                     foreach (var image in images)
@@ -981,8 +978,8 @@ namespace ImageTag.Code
 
                     foreach (var image in removeList)
                     {
-                        App.ImageTag.Entities.Images.Remove(image);
-                        App.Log.Info("Removed duplicate record for: " + image.Path);
+                        Context.Images.Remove(image);
+                        logger.LogInformation("Removed duplicate record for: " + image.Path);
 
 
                         if (deleteFileToo)
@@ -990,11 +987,11 @@ namespace ImageTag.Code
                             try
                             {
                                 File.Delete(image.Path);
-                                App.Log.Info("Deleted duplicate file: " + image.Path);
+                                logger.LogInformation("Deleted duplicate file: " + image.Path);
                             }
                             catch (Exception ex)
                             {
-                                App.Log.Error("Couldn't delete duplicate file: " + image.Path + ": " + ex.Message);
+                                logger.LogError("Couldn't delete duplicate file: " + image.Path + ": " + ex.Message);
                             }
                         }
 
@@ -1006,7 +1003,7 @@ namespace ImageTag.Code
 
             PersistData();
 
-            App.Log.InfoFormat("Finished consolidating duplicate records.");
+            logger.LogInformation("Finished consolidating duplicate records.");
         }
 
 
@@ -1014,13 +1011,13 @@ namespace ImageTag.Code
 
         public void ReplaceDir(string search, string replace)
         {
-            App.Log.Info(" ");
-            App.Log.Info("================================================");
-            App.Log.Info("Replace directory: " + search + "  with  " + replace);
-            App.Log.Info("================================================");
+            logger.LogInformation(" ");
+            logger.LogInformation("================================================");
+            logger.LogInformation("Replace directory: " + search + "  with  " + replace);
+            logger.LogInformation("================================================");
 
 
-            var foundItems = App.ImageTag.Entities.Images.Where(x => x.Path.ToLower().StartsWith(search.ToLower()));
+            var foundItems = Context.Images.Where(x => x.Path.ToLower().StartsWith(search.ToLower()));
             foreach (var foundItem in foundItems)
             {
                 var newPath = foundItem.Path.Replace(search, replace);
@@ -1030,7 +1027,7 @@ namespace ImageTag.Code
                 // Check new file exists
                 if (!File.Exists(newPath))
                 {
-                    App.Log.Error("File did not exist: " + newPath);
+                    logger.LogError("File did not exist: " + newPath);
                 }
                 else
                 {
@@ -1039,41 +1036,41 @@ namespace ImageTag.Code
                     {
                         foundItem.Path = newPath;
 
-                        App.Log.Info("Changed directory to: " + newPath);
+                        logger.LogInformation("Changed directory to: " + newPath);
                     }
                     else
                     {
-                        App.Log.Error("Checksums didn't match for: " + newPath + ", " + foundItem.Path);
+                        logger.LogError("Checksums didn't match for: " + newPath + ", " + foundItem.Path);
                     }
                 }
             }
 
 
             PersistData();
-            App.Log.Info("Finished replacing directory.");
+            logger.LogInformation("Finished replacing directory.");
         }
 
         public void FindOrphanedFiles()
         {
-            string rootDir = App.ImageTag.Settings.DefaultDirectory;
+            string rootDir = Settings.DefaultDirectory;
 
-            var dir = App.ImageTag.Entities.OrganizeDirectories.FirstOrDefault(x => x.ParentDirectories.Count == 0);
+            var dir = Context.OrganizeDirectories.FirstOrDefault(x => x.ParentDirectories.Count == 0);
             if (dir != null)
             {
                 rootDir = dir.Name;
             }
 
-            var token = App.CancellationTokenSource.Token;
+            var token = new CancellationToken(); // App.CancellationTokenSource.Token;
 
             if (!Directory.Exists(rootDir))
                 return;
 
-            App.Log.Info(" ");
-            App.Log.Info("================================================");
-            App.Log.Info("Find orphaned files for: " + rootDir);
-            App.Log.Info("================================================");
+            logger.LogInformation(" ");
+            logger.LogInformation("================================================");
+            logger.LogInformation("Find orphaned files for: " + rootDir);
+            logger.LogInformation("================================================");
 
-            var fileExts = App.ImageTag.Settings.Extensions.Select(x => x.Extension).Select(x => x.Substring(1, x.Length - 1)).ToArray();
+            var fileExts = Settings.Extensions.Select(x => x.Extension).Select(x => x.Substring(1, x.Length - 1)).ToArray();
 
             int index = 0;
             int pageSize = 1000;
@@ -1085,7 +1082,7 @@ namespace ImageTag.Code
                 var files = Directory.EnumerateFiles(rootDir, "*.*", SearchOption.AllDirectories)
                     .Where(x => fileExts.Any(x.EndsWith)).Skip(index).Take(pageSize).Select(x => x.ToLower()).ToList();
 
-                var existingImages = App.ImageTag.Entities.Images.Where(x => files.Contains(x.Path.ToLower())).ToList();
+                var existingImages = Context.Images.Where(x => files.Contains(x.Path.ToLower())).ToList();
                 if (existingImages.Count != files.Count)
                 {
                     // Must be a missing file in this batch; find it!
@@ -1094,7 +1091,7 @@ namespace ImageTag.Code
                     foreach (var missingFile in missingFiles)
                     {
                         // Orphaned
-                        App.Log.Info("Orphaned file: " + missingFile);
+                        logger.LogInformation("Orphaned file: " + missingFile);
                     }
                 }
 
@@ -1108,7 +1105,7 @@ namespace ImageTag.Code
 
                 if (token.IsCancellationRequested)
                 {
-                    App.Log.Error("Aborted finding orphaned files.");
+                    logger.LogError("Aborted finding orphaned files.");
                     return;
                 }
 
@@ -1116,10 +1113,10 @@ namespace ImageTag.Code
                 foreach (var fileInfo in files)
                 {
                     filesFound = true;
-                    if (!App.ImageTag.Entities.Images.Any(x => x.Path.ToLower() == fileInfo.ToLower()))
+                    if (!Context.Images.Any(x => x.Path.ToLower() == fileInfo.ToLower()))
                     {
                         // Orphaned
-                        App.Log.Info("Orphaned file: " + fileInfo);
+                        logger.LogInformation("Orphaned file: " + fileInfo);
                     }
                 }*/
 
@@ -1127,7 +1124,7 @@ namespace ImageTag.Code
                 index += pageSize;
             }
 
-            App.Log.Info("Finished finding orphaned files.");
+            logger.LogInformation("Finished finding orphaned files.");
         }
 
 
@@ -1145,11 +1142,11 @@ namespace ImageTag.Code
 
             if (hash1 != hash2)
             {
-                App.Log.Info("Files different: " + file1 + ", " + file2);
+                logger.LogInformation("Files different: " + file1 + ", " + file2);
             }
             else
             {
-                App.Log.Info("Files same: " + file1 + ", " + file2);
+                logger.LogInformation("Files same: " + file1 + ", " + file2);
             }
 
             file2 = @"T:\tagged\vg girls\ruto\587046bf956493c50594eb588a0c6411.jpeg";
@@ -1159,11 +1156,11 @@ namespace ImageTag.Code
 
             if (hash1 != hash2)
             {
-                App.Log.Info("Files different: " + file1 + ", " + file2);
+                logger.LogInformation("Files different: " + file1 + ", " + file2);
             }
             else
             {
-                App.Log.Info("Files same: " + file1 + ", " + file2);
+                logger.LogInformation("Files same: " + file1 + ", " + file2);
             }
 
         }
@@ -1171,7 +1168,7 @@ namespace ImageTag.Code
 
         public void FindDuplicateFilesByContent()
         {
-            var dupeFinder = new ImageDuplicateFinder();
+            var dupeFinder = new ImageDuplicateFinder(logger, Context);
             dupeFinder.FindDuplicateFilesByContent();
 
             FileProcessData = dupeFinder.FileProcessData;
@@ -1189,22 +1186,22 @@ namespace ImageTag.Code
             if (!String.IsNullOrEmpty(dirName))
             {
 
-                var existingImages = App.ImageTag.Entities.Images.Where(x => x.Path.ToLower().StartsWith(dirName)).ToList();
+                var existingImages = Context.Images.Where(x => x.Path.ToLower().StartsWith(dirName)).ToList();
                 long fileCount = 0;
                 foreach (var existingImage in existingImages)
                 {
                     var imageDir = Path.GetDirectoryName(existingImage.Path).ToLower();
                     if (dirName == imageDir)
                     {
-                        App.ImageTag.Entities.Images.Remove(existingImage);
+                        Context.Images.Remove(existingImage);
                         fileCount++;
                     }
                 }
 
                 PersistData();
 
-                App.Log.Info("Untagged " + fileCount + " images.");
-                App.Log.Info("Untagged directory OK: " + dirName);
+                logger.LogInformation("Untagged " + fileCount + " images.");
+                logger.LogInformation("Untagged directory OK: " + dirName);
             }
         }
     }

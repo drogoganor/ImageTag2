@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +19,8 @@ using System.Windows.Navigation;
 using ImageTag.Code;
 using ImageTag.Data;
 using ImageTag.Model;
-using Image = ImageTagWPF.Data.Image;
+using Microsoft.Extensions.Logging;
+using Image = ImageTag.Data.Image;
 using Path = System.Windows.Shapes.Path;
 
 namespace ImageTag.Controls.Forms
@@ -28,6 +30,10 @@ namespace ImageTag.Controls.Forms
     /// </summary>
     public partial class ImageTaggerForm : UserControl
     {
+        private readonly ILogger<ImageTaggerForm> logger;
+        private readonly ImageTagContext context;
+        private readonly ImageTagSettings settings;
+        private readonly Code.ImageTag imageTag;
         protected List<Image> IndexImages = new List<Image>();
 
         protected bool MultipleSelected = false;
@@ -35,14 +41,22 @@ namespace ImageTag.Controls.Forms
 
         protected List<TagModel> LastSelectedTags = new List<TagModel>();
 
-        public ImageTaggerForm()
+        public ImageTaggerForm(
+            ILogger<ImageTaggerForm> logger,
+            ImageTagContext context,
+            ImageTagSettings settings,
+            Code.ImageTag imageTag)
         {
+            this.logger = logger;
+            this.settings = settings;
+            this.context = context;
+            this.imageTag = imageTag;
             InitializeComponent();
         }
 
         public void Initialize()
         {
-            var defaultDirectory = App.ImageTag.Settings.DefaultDirectory;
+            var defaultDirectory = settings.DefaultDirectory;
             if (String.IsNullOrEmpty(defaultDirectory) || !Directory.Exists(defaultDirectory))
             {
                 defaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonPictures);
@@ -51,8 +65,6 @@ namespace ImageTag.Controls.Forms
             FileTree.SetRootDirectory(defaultDirectory);
 
             TagSelectControl.Initialize();
-            
-
         }
 
 
@@ -83,15 +95,15 @@ namespace ImageTag.Controls.Forms
             // Get list of images
             var imageList = GetSelectedImages();
 
-            Util.UpdateImageTags(imageList, new List<TagModel>() {selecteditem}, App.CancellationTokenSource.Token, addOnly:true);
+            Util.UpdateImageTags(context, imageList, new List<TagModel>() {selecteditem}, new CancellationToken(), addOnly:true);
 
             try
             {
-                App.ImageTag.Entities.SaveChanges();
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
-                App.Log.Error("Couldn't tag images: " + ex.Message);
+                logger.LogError("Couldn't tag images: " + ex.Message);
                 throw ex;
             }
 
@@ -127,7 +139,7 @@ namespace ImageTag.Controls.Forms
                 if (image.Image == null)
                 {
                     // Try and load it
-                    image.Image = App.ImageTag.Entities.Images.FirstOrDefault(x => x.Path == image.FullPath);
+                    image.Image = context.Images.FirstOrDefault(x => x.Path == image.FullPath);
                 }
             }
         }
@@ -157,7 +169,8 @@ namespace ImageTag.Controls.Forms
                     Action = () => UpdateRatingForSelectedImages(imageList, rating),
                     Description = "Updating rating to: " + rating,
                 };
-                App.ImageTag.Enqueue(dispatchItem);
+
+                imageTag.Enqueue(dispatchItem);
             }
 
         }
@@ -166,21 +179,21 @@ namespace ImageTag.Controls.Forms
         {
             LoadImageRecords(imageList);
 
-            Util.UpdateImageRating(imageList, rating);
+            Util.UpdateImageRating(context, imageList, rating);
 
-            if (App.CancellationTokenSource.IsCancellationRequested)
-            {
-                App.Log.Info("Image rating change was canceled.");
-                return;
-            }
+            //if (App.CancellationTokenSource.IsCancellationRequested)
+            //{
+            //    App.Log.Info("Image rating change was canceled.");
+            //    return;
+            //}
 
             try
             {
-                App.ImageTag.Entities.SaveChanges();
+                context.SaveChanges();
             }
             catch (Exception ex)
             {
-                App.Log.Error("Couldn't update rating of images: " + ex.Message);
+                logger.LogError("Couldn't update rating of images: " + ex.Message);
                 throw ex;
             }
         }
@@ -195,11 +208,12 @@ namespace ImageTag.Controls.Forms
                 Action = () => UpdateTagsForSelectedImages(imageList, tags),
                 Description = "Updating tags to: " + String.Join(", ", tags.Select(x => x.Tag.Name)),
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
         }
 
         protected void UpdateTagsForSelectedImages(List<ImageFileThumbData> imageList, List<TagModel> tags)
         {
+            var token = new CancellationToken();
             if (!IsUpdating)
             {
                 LoadImageRecords(imageList);
@@ -214,31 +228,31 @@ namespace ImageTag.Controls.Forms
 
 
                     Util.RemoveImageTags(imageList, removedTags);
-                    Util.UpdateImageTags(imageList, tags, App.CancellationTokenSource.Token, addOnly: true);
+                    Util.UpdateImageTags(context, imageList, tags, token, addOnly: true);
 
                     LastSelectedTags = tags;
                 }
                 else
-                    Util.UpdateImageTags(imageList, tags, App.CancellationTokenSource.Token);
+                    Util.UpdateImageTags(context, imageList, tags, token);
 
 
                 var now = DateTime.Now;
 
-                var token = App.CancellationTokenSource.Token;
+                //var token = App.CancellationTokenSource.Token;
 
                 if (token.IsCancellationRequested)
                 {
-                    App.Log.Info("Image tag was canceled.");
+                    logger.LogInformation("Image tag was canceled.");
                     return;
                 }
 
                 try
                 {
-                    App.ImageTag.Entities.SaveChanges();
+                    context.SaveChanges();
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Couldn't tag images: " + ex.Message);
+                    logger.LogError("Couldn't tag images: " + ex.Message);
                     throw ex;
                 }
 

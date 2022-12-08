@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Controls="clr-namespace:ImageTagWPF.Controls" x:Class="ImageTagWPF.Controls.Windows.ImageCompareWindow"
+        xmlns:Controls="clr-namespace:ImageTag.Controls" x:Class="ImageTag.Controls.Windows.ImageCompareWindow"
         mc:Ignorable="d"
         Title="Select Image" SizeToContent="WidthAndHeight" Width="640" WindowStartupLocation="CenterScreen">
     <Grid>

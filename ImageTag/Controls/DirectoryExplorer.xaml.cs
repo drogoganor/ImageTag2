@@ -1,22 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ImageTag.Code;
 using ImageTag.Model;
-using Path = System.IO.Path;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace ImageTag.Controls
@@ -96,17 +85,17 @@ namespace ImageTag.Controls
 
         private void PickButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new FolderBrowserDialog()
-            {
-                Description = "Select root directory"
-            };
-            var result = dialog.ShowDialog();
+            //var dialog = new FolderBrowserDialog()
+            //{
+            //    Description = "Select root directory"
+            //};
+            //var result = dialog.ShowDialog();
 
-            if (result == DialogResult.OK &&
-                Directory.Exists(dialog.SelectedPath))
-            {
-                SetRootDirectory(dialog.SelectedPath);
-            }
+            //if (result == DialogResult.OK &&
+            //    Directory.Exists(dialog.SelectedPath))
+            //{
+            //    SetRootDirectory(dialog.SelectedPath);
+            //}
         }
 
         private void DirectoryTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -119,28 +108,28 @@ namespace ImageTag.Controls
             }
         }
 
-        private void FileTree_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            var selectedItem = FileTree.SelectedItem;
+        //private void FileTree_OnSelectedItemChanged(DirectoryExplorer sender, RoutedPropertyChangedEventArgs<object> e)
+        //{
+        //    var selectedItem = FileTree.SelectedItem;
 
-            if (SkipNextDirPick)
-            {
-                SkipNextDirPick = false;
-                return;
-            }
+        //    if (SkipNextDirPick)
+        //    {
+        //        SkipNextDirPick = false;
+        //        return;
+        //    }
 
-            var dirModel = selectedItem as DirectoryModel;
-            if (dirModel != null)
-            {
-                if (CurrentDirectory == null || CurrentDirectory != dirModel)
-                {
-                    CurrentDirectory = dirModel;
-                    OnPickDirectory?.Invoke(dirModel.FullPath);
-                }
+        //    var dirModel = selectedItem as DirectoryModel;
+        //    if (dirModel != null)
+        //    {
+        //        if (CurrentDirectory == null || CurrentDirectory != dirModel)
+        //        {
+        //            CurrentDirectory = dirModel;
+        //            OnPickDirectory?.Invoke(dirModel.FullPath);
+        //        }
 
-            }
+        //    }
 
-        }
+        //}
                
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)

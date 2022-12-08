@@ -24,18 +24,24 @@ namespace ImageTag.Controls.Forms
     public partial class OrganizeForm : UserControl
     {
         public List<TagModel> SearchTermList = new List<TagModel>();
+        private readonly ImageTagContext context;
+        private readonly Code.ImageTag imageTag;
 
-        public OrganizeForm()
+        public OrganizeForm(
+            Code.ImageTag imageTag,
+            ImageTagContext context)
         {
-            //InitializeComponent();
+            this.context = context;
+            this.imageTag = imageTag;
+            InitializeComponent();
 
             //ForeColorPickerRow.SetColor(Colors.Black);
         }
 
         public void Initialize()
         {
-            //OrganizeTree.Initialize();
-            //TagSelectControl.Initialize();
+            OrganizeTree.Initialize();
+            TagSelectControl.Initialize();
         }
 
         private void ClearTagButton_OnClick(object sender, RoutedEventArgs e)
@@ -126,7 +132,7 @@ namespace ImageTag.Controls.Forms
                 }
                 selectedItem.Tags = tags;
 
-                App.ImageTag.Entities.SaveChanges();
+                context.SaveChanges();
                 
                 OrganizeTree.Initialize(); // refresh content
 
@@ -173,10 +179,10 @@ namespace ImageTag.Controls.Forms
             }
             else
             {
-                App.ImageTag.Entities.OrganizeDirectories.Add(newDir);
+                context.OrganizeDirectories.Add(newDir);
             }
             
-            App.ImageTag.Entities.SaveChanges();
+            context.SaveChanges();
 
             OrganizeTree.Initialize(); // refresh content
 
@@ -255,9 +261,9 @@ namespace ImageTag.Controls.Forms
 
                 if (result == MessageBoxResult.OK)
                 {
-                    App.ImageTag.Entities.OrganizeDirectories.Remove(selectedItem);
+                    context.OrganizeDirectories.Remove(selectedItem);
                     
-                    App.ImageTag.Entities.SaveChanges();
+                    context.SaveChanges();
 
                     OrganizeTree.Initialize(); // refresh content
                 }
@@ -268,7 +274,7 @@ namespace ImageTag.Controls.Forms
         {
             MoveNode(true);
 
-            App.ImageTag.Entities.SaveChanges();
+            context.SaveChanges();
 
             var selectedItem = OrganizeTree.FileTree.SelectedItem as OrganizeDirectory;
 
@@ -281,7 +287,7 @@ namespace ImageTag.Controls.Forms
         {
             MoveNode(false);
 
-            App.ImageTag.Entities.SaveChanges();
+            context.SaveChanges();
             
             var selectedItem = OrganizeTree.FileTree.SelectedItem as OrganizeDirectory;
 
@@ -424,7 +430,7 @@ namespace ImageTag.Controls.Forms
             MoveNodeAllTheWay(true);
 
 
-            //App.ImageTag.Entities.SaveChanges();
+            //context.SaveChanges();
 
             var selectedItem = OrganizeTree.FileTree.SelectedItem as OrganizeDirectory;
 
@@ -438,7 +444,7 @@ namespace ImageTag.Controls.Forms
             MoveNodeAllTheWay(false);
 
 
-            //App.ImageTag.Entities.SaveChanges();
+            //context.SaveChanges();
 
             var selectedItem = OrganizeTree.FileTree.SelectedItem as OrganizeDirectory;
 

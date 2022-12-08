@@ -18,7 +18,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ImageTag.Code;
+using ImageTag.Data;
 using ImageTag.Model;
+using Microsoft.Extensions.Logging;
 
 namespace ImageTag.Controls
 {
@@ -36,10 +38,19 @@ namespace ImageTag.Controls
         protected bool StartedDragOnScrollbar = false;
 
         protected ScrollBar ScrollBar;
-        
 
-        public FileExplorer()
+        private readonly ILogger<FileExplorer> logger;
+        private readonly ImageTagSettings settings;
+        private readonly ImageTagContext context;
+
+        public FileExplorer(
+            ILogger<FileExplorer> logger,
+            ImageTagSettings settings,
+            ImageTagContext context)
         {
+            this.logger = logger;
+            this.settings = settings;
+            this.context = context;
             InitializeComponent();
 
             FileViewer.Loaded += (sender, e) =>
@@ -205,7 +216,7 @@ namespace ImageTag.Controls
             {
                 if (item.ImageSource == null)
                 {
-                    BitmapImage thumbImage = Util.GetThumbnailForImage(item.FullPath, ThumbWidth);
+                    BitmapImage thumbImage = Util.GetThumbnailForImage(settings, logger, item.FullPath, ThumbWidth);
                     if (thumbImage != null)
                     {
                         item.ImageSource = thumbImage;
@@ -257,7 +268,7 @@ namespace ImageTag.Controls
             if (Directory.Exists(targetDirectory))
             {
                 // Get all files in this directory
-                var files = Util.GetFilesByExtensions(new DirectoryInfo(targetDirectory), App.ImageTag.Settings.Extensions.Select(x => x.Extension).ToArray());
+                var files = Util.GetFilesByExtensions(new DirectoryInfo(targetDirectory), settings.Extensions.Select(x => x.Extension).ToArray());
 
                 /*
                 var list = new List<ImageFileThumbData>();
@@ -313,7 +324,7 @@ namespace ImageTag.Controls
                     if (thumbObj.Image == null)
                     {
                         // Find out if it's indexed
-                        var indexedImage = App.ImageTag.Entities.Images.FirstOrDefault(x =>
+                        var indexedImage = context.Images.FirstOrDefault(x =>
                                 x.Path == thumbObj.FullPath
                         //&& x.Checksum == checksum
                         );

@@ -1,9 +1,13 @@
-﻿using System;
+﻿using ImageComparison;
+using ImageTag.Data;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Image = ImageTag.Data.Image;
@@ -20,16 +24,21 @@ namespace ImageTag.Code
 
 
         public ProcessOutputReport FileProcessData;
+        private readonly ImageTagContext context;
+        private readonly ILogger logger;
 
-        public ImageDuplicateFinder()
+        public ImageDuplicateFinder(
+            ILogger logger,
+            ImageTagContext context)
         {
-
+            this.logger = logger;
+            this.context = context;
         }
 
 
         protected void InitializeBatchImages()
         {
-            AllImages = App.ImageTag.Entities.Images.ToList();
+            AllImages = context.Images.ToList();
 
             foreach (var allImage in AllImages)
             {
@@ -44,7 +53,7 @@ namespace ImageTag.Code
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Error getting image dimensions quick: " + ex.Message);
+                    logger.LogError("Error getting image dimensions quick: " + ex.Message);
                 }
 
                 if (!gotSize)
@@ -59,7 +68,7 @@ namespace ImageTag.Code
                     }
                     catch (Exception ex)
                     {
-                        App.Log.Error("Error getting image dimensions: " + ex.Message);
+                        logger.LogError("Error getting image dimensions: " + ex.Message);
                         continue;
                     }
                 }
@@ -77,12 +86,12 @@ namespace ImageTag.Code
 
         public void FindDuplicateFilesByContent()
         {
-            App.Log.Info(" ");
-            App.Log.Info("================================================");
-            App.Log.Info("Find duplicate images by content");
-            App.Log.Info("================================================");
+            logger.LogInformation(" ");
+            logger.LogInformation("================================================");
+            logger.LogInformation("Find duplicate images by content");
+            logger.LogInformation("================================================");
 
-            var token = App.CancellationTokenSource.Token;
+            var token = new CancellationToken();
 
             bool checkOnlySameDir = true;
 
@@ -103,7 +112,7 @@ namespace ImageTag.Code
 
             var matchingSizesList = matchingSizes.ToList();
 
-            App.Log.Info("Found " + matchingSizesList.Count + " sets of images with same dimensions");
+            logger.LogInformation("Found " + matchingSizesList.Count + " sets of images with same dimensions");
 
             var checkedHash = new HashSet<string>();
 
@@ -120,7 +129,7 @@ namespace ImageTag.Code
                     {
                         if (token.IsCancellationRequested)
                         {
-                            App.Log.Error("Aborted checking files by content.");
+                            logger.LogError("Aborted checking files by content.");
                             return;
                         }
 
@@ -135,7 +144,7 @@ namespace ImageTag.Code
 
                         if (CheckImageMatch(matchingImage.Image.Path, fileSize, innerImage.Image.Path))
                         {
-                            App.Log.Info("Found dupe: " + matchingImage.Image.Path + "  for: " + innerImage.Image.Path);
+                            logger.LogInformation("Found dupe: " + matchingImage.Image.Path + "  for: " + innerImage.Image.Path);
 
                             FileProcessData.Operations.Add(new ProcessOperation()
                             {
@@ -152,7 +161,7 @@ namespace ImageTag.Code
                 }
             }
 
-            App.Log.Info("Finished checking files by content.");
+            logger.LogInformation("Finished checking files by content.");
 
 
 
@@ -160,7 +169,7 @@ namespace ImageTag.Code
             //{
             //    if (!File.Exists(file.Path))
             //    {
-            //        App.Log.Error("Couldn't find file: " + file.Path);
+            //        logger.Error("Couldn't find file: " + file.Path);
             //        continue;
             //    }
 
@@ -174,15 +183,15 @@ namespace ImageTag.Code
 
             //    var span = DateTime.Now - now;
 
-            //    App.Log.Info("Inner loop took: " + span.ToString("g"));
+            //    logger.Info("Inner loop took: " + span.ToString("g"));
 
 
             //    if (matchingImages.Count > 0)
             //    {
-            //        App.Log.Info("Found duplicate images for: " + file);
+            //        logger.Info("Found duplicate images for: " + file);
             //        foreach (var matchingImage in matchingImages)
             //        {
-            //            App.Log.Info("Dupe: " + matchingImage);
+            //            logger.Info("Dupe: " + matchingImage);
             //        }
             //    }
             //}
@@ -274,7 +283,7 @@ namespace ImageTag.Code
                 {
                     //matchingImages.Add(matchFile.Path);
 
-                    App.Log.Info("Found dupe image: " + image.Path);
+                    logger.LogInformation("Found dupe image: " + image.Path);
                 }
             }
         }
@@ -284,7 +293,7 @@ namespace ImageTag.Code
         {
             if (!File.Exists(file1))
             {
-                App.Log.Error("Couldn't find file: " + file1);
+                logger.LogError("Couldn't find file: " + file1);
                 return false;
             }
 
@@ -306,7 +315,7 @@ namespace ImageTag.Code
 
                 try
                 {
-                    var diffVal = XnaFan.ImageComparison.ImageTool.GetPercentageDifference(file1, file2);
+                    var diffVal = ImageTool.GetPercentageDifference(file1, file2);
                     if (diffVal < diffThreshold)
                     {
                         //matchingImages.Add(matchFile.Path);
@@ -315,7 +324,7 @@ namespace ImageTag.Code
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Error comparing files: " + ex.Message);
+                    logger.LogError("Error comparing files: " + ex.Message);
                 }
             }
             return false;

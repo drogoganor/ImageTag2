@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ColorPickerWPF.Code;
 using ImageTag.Code;
 using ImageTag.Data;
 using ImageTag.Model;
@@ -30,9 +29,15 @@ namespace ImageTag.Controls.Forms
 
         protected List<TagModel> Tags;
         protected Tag SelectedTag;
+        private readonly ImageTagContext context;
+        private readonly Code.ImageTag imageTag;
 
-        public TagManagerForm()
+        public TagManagerForm(
+            Code.ImageTag imageTag,
+            ImageTagContext context)
         {
+            this.context = context;
+            this.imageTag = imageTag;
             InitializeComponent();
         }
 
@@ -48,7 +53,7 @@ namespace ImageTag.Controls.Forms
         private void UpdateTagList()
         {
             // Get tags
-            Tags = App.ImageTag.Entities.Tags
+            Tags = context.Tags
                 .Select(x => new TagModel()
                 {
                     Tag = x
@@ -60,8 +65,8 @@ namespace ImageTag.Controls.Forms
             foreach (var tagModel in Tags)
             {
                 var type = (TagType) tagModel.Tag.TagType;
-            
-                tagModel.HexColor = App.ImageTag.GetColorForTagType(type).ToHexString();
+
+                //tagModel.HexColor = imageTag.GetColorForTagType(type); //.ToHexString();
             }
 
             TagList.ItemsSource = Tags;
@@ -177,7 +182,7 @@ namespace ImageTag.Controls.Forms
 
 
 
-                App.ImageTag.Entities.SaveChanges();
+                context.SaveChanges();
 
                 int selectedIndex = TagList.SelectedIndex;
                 UpdateTagList();
@@ -197,9 +202,9 @@ namespace ImageTag.Controls.Forms
                     "Delete Tag", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (dlgResult == MessageBoxResult.Yes)
                 {
-                    App.ImageTag.Entities.Tags.Remove(SelectedTag);
+                    context.Tags.Remove(SelectedTag);
 
-                    App.ImageTag.Entities.SaveChanges();
+                    context.SaveChanges();
 
                     UpdateTagList();
 
@@ -230,9 +235,9 @@ namespace ImageTag.Controls.Forms
                 SelectedTag.Description = DescriptionTextBox.Text;
                 SelectedTag.TagType = TypeCombo.SelectedIndex;
                 
-                App.ImageTag.Entities.Tags.Add(SelectedTag);
+                context.Tags.Add(SelectedTag);
 
-                App.ImageTag.Entities.SaveChanges();
+                context.SaveChanges();
 
                 UpdateTagList();
                 TagList.SelectedIndex = 0;

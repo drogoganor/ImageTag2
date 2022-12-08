@@ -20,6 +20,9 @@ using Microsoft.Win32;
 using Image = ImageTag.Data.Image;
 using Color = System.Windows.Media.Color;
 using Size = System.Drawing.Size;
+using Microsoft.Extensions.Logging;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace ImageTag.Code
 {
@@ -83,7 +86,8 @@ namespace ImageTag.Code
         */
 
 
-        public static BitmapImage GetThumbnailForImage(string fullPath, int thumbWidth = 200)
+        public static BitmapImage GetThumbnailForImage(
+            ImageTagSettings settings, ILogger logger, string fullPath, int thumbWidth = 200)
         {
             BitmapImage thumbImage = null;
             if (File.Exists(fullPath))
@@ -127,7 +131,7 @@ namespace ImageTag.Code
                     try
                     {
                         var tempImageFilename = Guid.NewGuid().ToString() + ".png";
-                        var tempImagePath = Path.Combine(App.ImageTag.Settings.TempDirectory, tempImageFilename);
+                        var tempImagePath = Path.Combine(settings.TempDirectory, tempImageFilename);
                         
                         var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
                         ffMpeg.GetVideoThumbnail(fullPath, tempImagePath, 5);
@@ -144,7 +148,7 @@ namespace ImageTag.Code
                     }
                     catch (Exception ex)
                     {
-                        App.Log.Error("Couldn't create thumbnnail for webm: " + fullPath + " : " + ex.Message);
+                        logger.LogError("Couldn't create thumbnnail for webm: " + fullPath + " : " + ex.Message);
                         thumbImage = null;
                     }
 
@@ -162,8 +166,8 @@ namespace ImageTag.Code
                 thumbImage = new BitmapImage();
                 try
                 {
-                    Stream stream = new System.IO.MemoryStream();  // Create new MemoryStream  
-                    Bitmap bitmap = new Bitmap(fullPath);  // Create new Bitmap (System.Drawing.Bitmap) from the existing image file (albumArtSource set to its path name)  
+                    Stream stream = new MemoryStream();  // Create new MemoryStream  
+                    Bitmap bitmap = new(fullPath);  // Create new Bitmap (System.Drawing.Bitmap) from the existing image file (albumArtSource set to its path name)  
                     bitmap.Save(stream, ImageFormat.Png);  // Save the loaded Bitmap into the MemoryStream - Png format was the only one I tried that didn't cause an error (tried Jpg, Bmp, MemoryBmp)  
                     bitmap.Dispose();  // Dispose bitmap so it releases the source image file  
 
@@ -187,7 +191,7 @@ namespace ImageTag.Code
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Couldn't create thumbnnail for: " + fullPath + " : " + ex.Message);
+                    //App.Log.Error("Couldn't create thumbnnail for: " + fullPath + " : " + ex.Message);
                     thumbImage = null;
                 }
 
@@ -207,7 +211,7 @@ namespace ImageTag.Code
             }
         }
 
-        public static void UpdateImageTags(List<ImageFileThumbData> images, List<TagModel> tags, CancellationToken token, bool addOnly = false)
+        public static void UpdateImageTags(ImageTagContext context, List<ImageFileThumbData> images, List<TagModel> tags, CancellationToken token, bool addOnly = false)
         {
             int threadDivisor = 16;
             int threadListSize = images.Count/threadDivisor;
@@ -222,7 +226,7 @@ namespace ImageTag.Code
                     if (token.IsCancellationRequested)
                         break;
 
-                    UpdateSingleImageTags(imageItem, tags, addOnly);
+                    UpdateSingleImageTags(context, imageItem, tags, addOnly);
                 }
             }
             else
@@ -257,7 +261,7 @@ namespace ImageTag.Code
                     {
                         foreach (var imageItem in imageList)
                         {
-                            UpdateSingleImageTags(imageItem, tags, addOnly, useSafeCollection:true);
+                            UpdateSingleImageTags(context, imageItem, tags, addOnly, useSafeCollection:true);
                         }
                     });
                     taskList.Add(task);
@@ -302,7 +306,7 @@ namespace ImageTag.Code
                     {
                         foreach (var threadSafeImage in ThreadSafeImages)
                         {
-                            App.ImageTag.Entities.Images.Add(threadSafeImage);
+                            context.Images.Add(threadSafeImage);
                         }
                         ThreadSafeImages.Dispose();
 
@@ -320,7 +324,7 @@ namespace ImageTag.Code
 
         private static BlockingCollection<Image> ThreadSafeImages;
 
-        public static void UpdateSingleImageTags(ImageFileThumbData imageItem, List<TagModel> tags, bool addOnly = false, bool useSafeCollection = false)
+        public static void UpdateSingleImageTags(ImageTagContext context, ImageFileThumbData imageItem, List<TagModel> tags, bool addOnly = false, bool useSafeCollection = false)
         {
             // Get the image data
             if (imageItem != null)
@@ -354,7 +358,7 @@ namespace ImageTag.Code
 
 
                     if (!useSafeCollection)
-                        App.ImageTag.Entities.Images.Add(newImageRecord);
+                        context.Images.Add(newImageRecord);
                     else
                         ThreadSafeImages.Add(newImageRecord);
                     
@@ -446,7 +450,7 @@ namespace ImageTag.Code
             }
         }
 
-        public static bool RetryMove(string filename, string dest, int interval = 1000, int retries = 10)
+        public static bool RetryMove(ILogger logger, string filename, string dest, int interval = 1000, int retries = 10)
         {
             for (int i = 0; i < retries; i++)
             {
@@ -458,7 +462,7 @@ namespace ImageTag.Code
                 }
                 catch (Exception ex)
                 {
-                    App.Log.Error("Couldn't rename file: " + filename + ": " + dest + ". Retry " + (i + 1));
+                    logger.LogError("Couldn't rename file: " + filename + ": " + dest + ". Retry " + (i + 1));
                 }
 
                 Thread.Sleep(interval);
@@ -466,14 +470,14 @@ namespace ImageTag.Code
             return false;
         }
 
-        public static void UpdateImageRating(List<ImageFileThumbData> images, int rating)
+        public static void UpdateImageRating(ImageTagContext context, List<ImageFileThumbData> images, int rating)
         {
 
             // Go through selected files and add tags
             foreach (var imageItem in images)
             {
-                if (App.CancellationTokenSource.Token.IsCancellationRequested)
-                    break;
+                //if (App.CancellationTokenSource.Token.IsCancellationRequested)
+                //    break;
 
                 // Get the image data
                 if (imageItem != null)
@@ -492,7 +496,7 @@ namespace ImageTag.Code
 
                         imageItem.Image = newImageRecord;
 
-                        App.ImageTag.Entities.Images.Add(newImageRecord);
+                        context.Images.Add(newImageRecord);
                     }
                     else
                     {

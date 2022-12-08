@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:Forms="clr-namespace:ImageTagWPF.Controls.Forms" xmlns:Controls="clr-namespace:ImageTagWPF.Controls" x:Class="ImageTagWPF.MainWindow"
+        xmlns:Forms="clr-namespace:ImageTag.Controls.Forms" xmlns:Controls="clr-namespace:ImageTag.Controls" x:Class="ImageTag.MainWindow"
         mc:Ignorable="d"
         Title="ImageTagWPF" Height="838" Width="1260" WindowStartupLocation="CenterScreen"
     Loaded="MainWindow_OnLoaded" Unloaded="Window_Unloaded" Icon="Resources/icon.png" Closing="MainWindow_OnClosing">

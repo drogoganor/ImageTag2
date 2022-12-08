@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
+using ImageTag.Data;
 
 namespace ImageTag.Controls
 {
@@ -31,15 +32,18 @@ namespace ImageTag.Controls
         public event OrganizeTreeNodeMoveHandler OnNodeMoveTop;
         public event OrganizeTreeNodeMoveHandler OnNodeMoveBottom;
 
-        public OrganizeTree()
+        private readonly ImageTagContext context;
+
+        public OrganizeTree(ImageTagContext context)
         {
+            this.context = context;
             InitializeComponent();
 		}
 
 
         public void Initialize()
         {
-            var rootDirectory = App.ImageTag.Entities.OrganizeDirectories.Where(x => x.ParentDirectories.Count == 0).ToList();
+            var rootDirectory = context.OrganizeDirectories.Where(x => x.ParentDirectories.Count == 0).ToList();
 
             FileTree.ItemsSource = rootDirectory;
             

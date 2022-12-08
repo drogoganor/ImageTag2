@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ColorPickerWPF.Code;
 using ImageTag.Code;
 using ImageTag.Data;
 using ImageTag.Model;
@@ -35,11 +34,16 @@ namespace ImageTag.Controls
         public List<TagModel> AllTags = new List<TagModel>();
 
         public bool IsUpdating = false;
-        
-        public TagSelectControl()
-        {
-            InitializeComponent();
+        private readonly ImageTagContext context;
+        private readonly Code.ImageTag imageTag;
 
+        public TagSelectControl(
+            Code.ImageTag imageTag,
+            ImageTagContext context)
+        {
+            this.context = context;
+            this.imageTag = imageTag;
+            InitializeComponent();
         }
 
         public void Initialize()
@@ -60,7 +64,7 @@ namespace ImageTag.Controls
 
         protected List<TagModel> GetAllTagModels()
         {
-            var tags = App.ImageTag.Entities.Tags
+            var tags = context.Tags
                 .Select(x => new TagModel()
                 {
                     Tag = x
@@ -72,7 +76,7 @@ namespace ImageTag.Controls
             foreach (var tagModel in tags)
             {
                 var type = (TagType)tagModel.Tag.TagType;
-                tagModel.HexColor = App.ImageTag.GetColorForTagType(type).ToHexString();
+                //tagModel.HexColor = imageTag.GetColorForTagType(type).ToHexString();
             }
             return tags;
         }

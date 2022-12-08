@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
 using ImageTag.Data;
-using Image = ImageTagWPF.Data.Image;
+using Image = ImageTag.Data.Image;
 using Path = System.IO.Path;
 
 namespace ImageTag.Controls.Forms
@@ -28,10 +28,12 @@ namespace ImageTag.Controls.Forms
         public delegate void OperationsCommenceMoveFilesHandler();
 
         public event OperationsCommenceMoveFilesHandler OnStartFileMove;
+        private Code.ImageTag imageTag;
         
 
-        public OperationsForm()
+        public OperationsForm(Code.ImageTag imageTag)
         {
+            this.imageTag = imageTag;
             InitializeComponent();
         }
 
@@ -40,7 +42,7 @@ namespace ImageTag.Controls.Forms
         {
             AppenderTextBox.ScrollToEnd();
 
-            OutputReportControl.SetProcessReport(App.ImageTag.FileProcessData);
+            OutputReportControl.SetProcessReport(imageTag.FileProcessData);
         }
 
 
@@ -51,11 +53,11 @@ namespace ImageTag.Controls.Forms
             var suppressSuccessMessages = SuppressSuccessMessagesCheckbox.IsChecked.Value;
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.OrganizeImages(suppressSuccessMessages),
+                Action = () => imageTag.OrganizeImages(suppressSuccessMessages),
                 Description = "Organizing images",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
 
             dispatchItem.OnFinish += DispatchItem_OnFinish;
 
@@ -85,13 +87,13 @@ namespace ImageTag.Controls.Forms
 
             var dispatchItem = new ImageTagDispatchItem()
             {
-                //Action = () => App.ImageTag.FindOrphanedFiles(),
-                Action = () => App.ImageTag.FindDuplicateFilesByContent(),
-                //Action = () => App.ImageTag.CheckFileDupesTest(),
+                //Action = () => imageTag.FindOrphanedFiles(),
+                Action = () => imageTag.FindDuplicateFilesByContent(),
+                //Action = () => imageTag.CheckFileDupesTest(),
                 Description = "Finding duplicate files by content",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
         }
 
@@ -99,11 +101,11 @@ namespace ImageTag.Controls.Forms
         {
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.FindOrphanedFiles(),
+                Action = () => imageTag.FindOrphanedFiles(),
                 Description = "Finding orphaned files",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
         }
 
@@ -112,11 +114,11 @@ namespace ImageTag.Controls.Forms
         {
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.FindOrphanedRecords(),
+                Action = () => imageTag.FindOrphanedRecords(),
                 Description = "Finding orphaned records",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
 
 
@@ -132,11 +134,11 @@ namespace ImageTag.Controls.Forms
         {
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.UpdateParentTags(),
+                Action = () => imageTag.UpdateParentTags(),
                 Description = "Updating parent tags",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
 
             //AppenderTextBox.ScrollToEnd();
@@ -160,11 +162,11 @@ namespace ImageTag.Controls.Forms
 
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.ConsolidateDuplicateFiles(ignoreFilename, deleteFileToo),
+                Action = () => imageTag.ConsolidateDuplicateFiles(ignoreFilename, deleteFileToo),
                 Description = "Consolidating duplicate files",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
 
 
@@ -175,8 +177,8 @@ namespace ImageTag.Controls.Forms
 
         private void ReplaceDirButton_Click(object sender, RoutedEventArgs e)
         {
-            var search = SearchDirTextBox.Text; //@"T:\unsorted\Images 2\";
-            var replace = ReplaceDirTextBox.Text; //@"T:\Images 2\";
+            var search = SearchDirTextBox.Text;
+            var replace = ReplaceDirTextBox.Text;
 
             if (string.IsNullOrEmpty(search))
             {
@@ -206,11 +208,11 @@ namespace ImageTag.Controls.Forms
 
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.ReplaceDir(search, replace),
+                Action = () => imageTag.ReplaceDir(search, replace),
                 Description = "Replacing directory",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
 
             //AppenderTextBox.ScrollToEnd();
@@ -220,11 +222,11 @@ namespace ImageTag.Controls.Forms
         {
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.ClearCopyDirectories(),
+                Action = () => imageTag.ClearCopyDirectories(),
                 Description = "Clearing copy directories",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
         }
 
@@ -247,11 +249,11 @@ namespace ImageTag.Controls.Forms
                 return;
             var dispatchItem = new ImageTagDispatchItem()
             {
-                Action = () => App.ImageTag.DelistDirectory(directory),
+                Action = () => imageTag.DelistDirectory(directory),
                 Description = "Delisting directory",
                 Dispatcher = Dispatcher
             };
-            App.ImageTag.Enqueue(dispatchItem);
+            imageTag.Enqueue(dispatchItem);
             dispatchItem.OnFinish += DispatchItem_OnFinish;
 
         }

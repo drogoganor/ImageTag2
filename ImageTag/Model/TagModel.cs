@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using ColorPickerWPF.Code;
 using ImageTag.Code;
 using ImageTag.Data;
 
@@ -17,7 +16,7 @@ namespace ImageTag.Model
 
         public TagModel()
         {
-            HexColor = Colors.Black.ToHexString();
+            //HexColor = Colors.Black.ToHexString();
         }
     }
 }

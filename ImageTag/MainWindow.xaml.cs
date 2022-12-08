@@ -33,10 +33,16 @@ namespace ImageTag
     {
         public ObservableCollection<ImageTagDispatchItem> DispatchItems { get; set; }
         public DispatcherTimer TaskTimer;
+        private readonly ImageTagContext context;
+        private readonly Code.ImageTag imageTag;
 
-        public MainWindow()
+        public MainWindow(
+            Code.ImageTag imageTag,
+            ImageTagContext context)
         {
-            //InitializeComponent();
+            this.context = context;
+            this.imageTag = imageTag;
+            InitializeComponent();
 
             DispatchItems = new ObservableCollection<ImageTagDispatchItem>();
 
@@ -61,8 +67,8 @@ namespace ImageTag
             SettingsForm.Initialize();
             OrganizeForm.Initialize();
 
-            App.ImageTag.OnStartItem += ImageTag_OnStartItem;
-            App.ImageTag.OnFinishItem += ImageTag_OnFinishItem;
+            imageTag.OnStartItem += ImageTag_OnStartItem;
+            imageTag.OnFinishItem += ImageTag_OnFinishItem;
 
             ProcessingItemsBox.ItemsSource = DispatchItems;
         }
@@ -88,7 +94,7 @@ namespace ImageTag
         {
             Initialize();
 
-            App.ImageTag.Start();
+            imageTag.Start();
         }
 
         private void TagManager_OnOnTagsUpdated()
@@ -101,10 +107,10 @@ namespace ImageTag
         private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
             TaskTimer.Stop();
-            App.ImageTag.SaveSettings();
-            App.ImageTag.Stop();
-            App.ImageTag.OnStartItem -= ImageTag_OnStartItem;
-            App.ImageTag.OnFinishItem -= ImageTag_OnFinishItem;
+            imageTag.SaveSettings();
+            imageTag.Stop();
+            imageTag.OnStartItem -= ImageTag_OnStartItem;
+            imageTag.OnFinishItem -= ImageTag_OnFinishItem;
         }
 
         private void OperationsForm_OnOnStartFileMove()
@@ -134,12 +140,12 @@ namespace ImageTag
                             if (result != MessageBoxResult.OK)
                                 return;
 
-                            App.CancellationTokenSource.Cancel();
+                            //App.CancellationTokenSource.Cancel();
                         }
                     }
                     else
                     {
-                        App.ImageTag.Dequeue(dispatch);
+                        imageTag.Dequeue(dispatch);
                     }
                 }
             }
