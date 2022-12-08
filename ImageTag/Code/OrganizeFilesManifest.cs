@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageTagWPF.Data;
+using ImageTag.Data;
 
-namespace ImageTagWPF.Code
+namespace ImageTag.Code
 {
     public class OrganizeFilesManifest
     {

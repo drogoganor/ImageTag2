@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
+using System.IO;
+using System.Xml.Serialization;
+using ImageTag.Model;
 
-using ColorPickerWPF.Code;
-
-using ImageTagWPF.Model;
-
-namespace ImageTagWPF.Code
+namespace ImageTag.Code
 {
-    using System.IO;
-    using System.Xml.Serialization;
-
-    [Serializable]
     public class ImageExtensionViewerProgram
     {
         public string Extension { get; set; }
@@ -22,8 +14,7 @@ namespace ImageTagWPF.Code
         public string ViewerProgram { get; set; }
     }
 
-    [Serializable]
-    public class ImageTagSettings : WriteableFileObject<ImageTagSettings>
+    public class ImageTagSettings
     {
         public bool PortableMode = false;
 
@@ -37,7 +28,7 @@ namespace ImageTagWPF.Code
         public string TempDirectory { get; set; }
 
         public string TempDirectoryName { get; set; } = "temp";
-        public string ImageTagCacheFolderName { get; set; } = "ImageTagWPF";
+        public string ImageTagCacheFolderName { get; set; } = "ImageTag";
 
         public ImageTagSettings()
         {

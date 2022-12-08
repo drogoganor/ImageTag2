@@ -1,28 +1,19 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ImageTagWPF.Controls;
-using ImageTagWPF.Data;
-using ImageTagWPF.Model;
-using log4net;
-using log4net.Config;
-using TinyIoC;
+using ImageTag.Controls;
+using ImageTag.Data;
+using ImageTag.Model;
 using Color = System.Windows.Media.Color;
-using Image = ImageTagWPF.Data.Image;
+using Image = ImageTag.Data.Image;
 
-namespace ImageTagWPF.Code
+namespace ImageTag.Code
 {
     public class ImageTag
     {
@@ -41,7 +32,7 @@ namespace ImageTagWPF.Code
         public const string ImageTagDbName = "imagetag.db";
         public const string SettingsName = "Settings.xml";
 
-        public ImageTagEntities Entities;
+        public ImageTagContext Context;
 
         public ImageTagSettings Settings;
 
@@ -49,8 +40,10 @@ namespace ImageTagWPF.Code
 
         protected OrganizeFilesManifest OrganizeFilesManifest;
 
-        public ImageTag()
+        public ImageTag(ImageTagContext context)
         {
+            Context = context;
+
             // Load settings
             var settingsPath = Path.Combine(Environment.CurrentDirectory, SettingsName);
             if (File.Exists(settingsPath))
@@ -135,8 +128,8 @@ namespace ImageTagWPF.Code
                 //var result = Thread.Join(MillisecondsTimeout);
                 if (!result)
                 {
-                    App.Log.Error("Couldn't stop task after " + MillisecondsTimeout/1000 +
-                                  " seconds. Waiting indefinitely...");
+                    //App.Log.Error("Couldn't stop task after " + MillisecondsTimeout/1000 +
+                    //              " seconds. Waiting indefinitely...");
 
                     //Thread.Join();
                     UpdateTask.Wait();

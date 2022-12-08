@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImageTagWPF.Model
+namespace ImageTag.Model
 {
     public enum TagType
     {

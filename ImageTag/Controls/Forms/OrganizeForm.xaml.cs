@@ -12,11 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTagWPF.Code;
-using ImageTagWPF.Data;
-using ImageTagWPF.Model;
+using ImageTag.Code;
+using ImageTag.Data;
+using ImageTag.Model;
 
-namespace ImageTagWPF.Controls.Forms
+namespace ImageTag.Controls.Forms
 {
     /// <summary>
     /// Interaction logic for OrganizeForm.xaml
@@ -27,15 +27,15 @@ namespace ImageTagWPF.Controls.Forms
 
         public OrganizeForm()
         {
-            InitializeComponent();
+            //InitializeComponent();
 
-            ForeColorPickerRow.SetColor(Colors.Black);
+            //ForeColorPickerRow.SetColor(Colors.Black);
         }
 
         public void Initialize()
         {
-            OrganizeTree.Initialize();
-            TagSelectControl.Initialize();
+            //OrganizeTree.Initialize();
+            //TagSelectControl.Initialize();
         }
 
         private void ClearTagButton_OnClick(object sender, RoutedEventArgs e)
@@ -53,7 +53,7 @@ namespace ImageTagWPF.Controls.Forms
                         SearchTermList.Remove(senderTagObject);
                     }
 
-                    TagSelectControl.TagViewer.SelectedItems.Remove(senderTagObject);
+                    //TagSelectControl.TagViewer.SelectedItems.Remove(senderTagObject);
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace ImageTagWPF.Controls.Forms
         private void TagSelectControl_OnOnTagAdd(TagModel selecteditem)
         {
             SearchTermList.Add(selecteditem);
-            SearchTermsBox.ItemsSource = SearchTermList;
+            //SearchTermsBox.ItemsSource = SearchTermList;
         }
 
         private void TagSelectControl_OnOnSelectionChanged(List<TagModel> tags)
@@ -104,7 +104,7 @@ namespace ImageTagWPF.Controls.Forms
                 selectedItem.IgnoreParent = IgnoreParentCheckbox.IsChecked.Value ? 1 : 0;
                 selectedItem.OrTags = OrTagsCheckbox.IsChecked.Value ? 1 : 0;
                 selectedItem.TheseTagsOnly = TheseTagsOnlyCheckbox.IsChecked.Value ? 1 : 0;
-                selectedItem.ForeColor = ForeColorPickerRow.Color.ToHexString();
+                //selectedItem.ForeColor = ForeColorPickerRow.Color.ToHexString();
 
                 if (TagSelectControl.RatingControl.Rating > 0)
                 {
@@ -144,7 +144,7 @@ namespace ImageTagWPF.Controls.Forms
                 IgnoreParent = IgnoreParentCheckbox.IsChecked.Value ? 1 : 0,
                 OrTags = OrTagsCheckbox.IsChecked.Value ? 1 : 0,
                 TheseTagsOnly = TheseTagsOnlyCheckbox.IsChecked.Value ? 1 : 0,
-                ForeColor = ForeColorPickerRow.Color.ToHexString(),
+                //ForeColor = ForeColorPickerRow.Color.ToHexString(),
                 //BackColor = BackColorPickerRow.Color.ToHexString(),
             };
 
@@ -204,7 +204,7 @@ namespace ImageTagWPF.Controls.Forms
                     TagSelectControl.RatingControl.SetRating(0);
                 }
 
-                ForeColorPickerRow.SetColor((Color)ColorConverter.ConvertFromString(treeNode.ForeColor));
+                //ForeColorPickerRow.SetColor((Color)ColorConverter.ConvertFromString(treeNode.ForeColor));
                 //BackColorPickerRow.SetColor((Color)ColorConverter.ConvertFromString(treeNode.BackColor));
                 
                 TagSelectControl.TagViewer.UnselectAll();
@@ -217,7 +217,7 @@ namespace ImageTagWPF.Controls.Forms
                     {
                         var tagModel = new TagModel()
                         {
-                            HexColor = Colors.Black.ToHexString(),
+                            //HexColor = Colors.Black.ToHexString(),
                             Tag = tag
                         };
                         list.Add(tagModel);

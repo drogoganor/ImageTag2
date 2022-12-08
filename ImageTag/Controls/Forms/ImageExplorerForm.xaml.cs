@@ -13,10 +13,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTagWPF.Code;
-using ImageTagWPF.Model;
+using ImageTag.Code;
+using ImageTag.Model;
 
-namespace ImageTagWPF.Controls.Forms
+namespace ImageTag.Controls.Forms
 {
     /// <summary>
     /// Interaction logic for ImageExplorerForm.xaml

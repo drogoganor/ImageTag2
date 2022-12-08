@@ -13,9 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTagWPF.Code;
+using ImageTag.Code;
 
-namespace ImageTagWPF.Controls
+namespace ImageTag.Controls
 {
     public delegate void OrganizeTreeNodePickHandler(object item);
     public delegate void OrganizeTreeNodeMoveHandler();

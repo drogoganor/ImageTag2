@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -17,24 +14,18 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
-using ImageTagWPF.Data;
-using ImageTagWPF.Model;
-
+using ImageTag.Data;
+using ImageTag.Model;
 using Microsoft.Win32;
-
-using Image = ImageTagWPF.Data.Image;
+using Image = ImageTag.Data.Image;
 using Color = System.Windows.Media.Color;
-using PixelFormat = System.Windows.Media.PixelFormat;
-using Point = System.Drawing.Point;
 using Size = System.Drawing.Size;
 
-namespace ImageTagWPF.Code
+namespace ImageTag.Code
 {
     public static class Util
     {
         private static Random Random = new Random();
-
 
         public static string GetFileHashSHA1(string filename)
         {
@@ -126,7 +117,7 @@ namespace ImageTagWPF.Code
                     }
                     else
                     {
-                        App.Log.Error("Couldn't create thumbnnail for: " + fullPath + " : " + ex.Message);
+                        //App.Log.Error("Couldn't create thumbnnail for: " + fullPath + " : " + ex.Message);
                         thumbImage = null;
                     }
                 }

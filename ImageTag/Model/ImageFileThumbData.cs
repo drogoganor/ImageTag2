@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using ImageTagWPF.Data;
+using ImageTag.Data;
 
-namespace ImageTagWPF.Model
+namespace ImageTag.Model
 {
     public class ImageFileThumbData
     {

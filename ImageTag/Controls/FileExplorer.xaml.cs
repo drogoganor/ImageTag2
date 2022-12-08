@@ -17,10 +17,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using ImageTagWPF.Code;
-using ImageTagWPF.Model;
+using ImageTag.Code;
+using ImageTag.Model;
 
-namespace ImageTagWPF.Controls
+namespace ImageTag.Controls
 {
     public delegate void ImageFileSelectedDelegate(ImageFileThumbData data);
 

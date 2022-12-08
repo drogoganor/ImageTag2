@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ImageTagWPF.Controls
+namespace ImageTag.Controls
 {
     /// <summary>
     /// Interaction logic for StarRatingControl.xaml

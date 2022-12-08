@@ -14,11 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTagWPF.Code;
-using ImageTagWPF.Controls.Windows;
+using ImageTag.Code;
+using ImageTag.Controls.Windows;
 using Path = System.IO.Path;
 
-namespace ImageTagWPF.Controls
+namespace ImageTag.Controls
 {
     /// <summary>
     /// Interaction logic for ProcessOutputReportControl.xaml

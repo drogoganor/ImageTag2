@@ -18,13 +18,13 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ImageTag;
-using ImageTagWPF.Code;
-using ImageTagWPF.Data;
-using ImageTagWPF.Model;
-using Image = ImageTagWPF.Data.Image;
+using ImageTag.Code;
+using ImageTag.Data;
+using ImageTag.Model;
+using Image = ImageTag.Data.Image;
 using Path = System.IO.Path;
 
-namespace ImageTagWPF
+namespace ImageTag
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -36,7 +36,7 @@ namespace ImageTagWPF
 
         public MainWindow()
         {
-            InitializeComponent();
+            //InitializeComponent();
 
             DispatchItems = new ObservableCollection<ImageTagDispatchItem>();
 

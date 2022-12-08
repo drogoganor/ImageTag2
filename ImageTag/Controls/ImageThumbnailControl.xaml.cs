@@ -14,10 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTagWPF.Model;
+using ImageTag.Model;
 using Path = System.IO.Path;
 
-namespace ImageTagWPF.Controls
+namespace ImageTag.Controls
 {
     /// <summary>
     /// Interaction logic for ImageThumbnailControl.xaml

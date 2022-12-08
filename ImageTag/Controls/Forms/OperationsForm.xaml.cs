@@ -13,12 +13,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTagWPF.Code;
-using ImageTagWPF.Data;
+using ImageTag.Code;
+using ImageTag.Data;
 using Image = ImageTagWPF.Data.Image;
 using Path = System.IO.Path;
 
-namespace ImageTagWPF.Controls.Forms
+namespace ImageTag.Controls.Forms
 {
     /// <summary>
     /// Interaction logic for OperationsForm.xaml

@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using ColorPickerWPF.Code;
-using ImageTagWPF.Code;
-using ImageTagWPF.Data;
+using ImageTag.Code;
+using ImageTag.Data;
 
-namespace ImageTagWPF.Model
+namespace ImageTag.Model
 {
     public class TagModel
     {

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
-namespace ImageTagWPF.Code
+namespace ImageTag.Code
 {
     public class ImageTagDispatchItem
     {

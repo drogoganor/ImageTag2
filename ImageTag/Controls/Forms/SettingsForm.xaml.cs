@@ -14,12 +14,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTagWPF.Code;
+using ImageTag.Code;
 using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using UserControl = System.Windows.Controls.UserControl;
 
-namespace ImageTagWPF.Controls.Forms
+namespace ImageTag.Controls.Forms
 {
     /// <summary>
     /// Interaction logic for SettingsForm.xaml

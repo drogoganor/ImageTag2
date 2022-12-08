@@ -14,11 +14,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ColorPickerWPF.Code;
-using ImageTagWPF.Code;
-using ImageTagWPF.Data;
-using ImageTagWPF.Model;
+using ImageTag.Code;
+using ImageTag.Data;
+using ImageTag.Model;
 
-namespace ImageTagWPF.Controls
+namespace ImageTag.Controls
 {
     /// <summary>
     /// Interaction logic for TagSelectControl.xaml

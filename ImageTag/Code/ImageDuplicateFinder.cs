@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Image = ImageTagWPF.Data.Image;
+using Image = ImageTag.Data.Image;
 
-namespace ImageTagWPF.Code
+namespace ImageTag.Code
 {
     public class ImageDuplicateFinder
     {
