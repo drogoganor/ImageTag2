@@ -25,6 +25,7 @@ namespace ImageTag
 
         public App()
         {
+            // https://stackoverflow.com/questions/73512443/dependency-injection-in-wpf-on-net-core-6
             AppHost = Host
                 .CreateDefaultBuilder()
                 .ConfigureServices((hostContext, services) =>
@@ -68,7 +69,7 @@ namespace ImageTag
             services.AddTransient<MainWindow>();
         }
 
-        private async void OnStartup(object sender, StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             //var mainWindow = serviceProvider.GetService<MainWindow>();
             //mainWindow.Show();
@@ -80,6 +81,16 @@ namespace ImageTag
             startupForm.Show();
 
             base.OnStartup(e);
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            using (host)
+            {
+                await host.StopAsync(TimeSpan.FromSeconds(5));
+            }
+
+            base.OnExit(e);
         }
 
         private ImageTagSettings LoadSettings()
