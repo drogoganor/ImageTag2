@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
-using ImageTag.Data;
 using ImageTag.Model;
 
 namespace ImageTag.Controls.Forms
@@ -24,12 +23,18 @@ namespace ImageTag.Controls.Forms
     public partial class OrganizeForm : UserControl
     {
         public List<TagModel> SearchTermList = new List<TagModel>();
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
         private readonly Code.ImageTag imageTag;
+
+        // TODO: Figure out how to inject dependencies
+        public OrganizeForm()
+        {
+
+        }
 
         public OrganizeForm(
             Code.ImageTag imageTag,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.context = context;
             this.imageTag = imageTag;
@@ -130,7 +135,8 @@ namespace ImageTag.Controls.Forms
                         tags.Add(tagItem.Tag);
                     }
                 }
-                selectedItem.Tags = tags;
+                
+                //selectedItem.Tags = tags;
 
                 context.SaveChanges();
                 
@@ -163,7 +169,8 @@ namespace ImageTag.Controls.Forms
                     tags.Add(tagItem.Tag);
                 }
             }
-            newDir.Tags = tags;
+            
+            //newDir.Tags = tags;
 
             if (TagSelectControl.RatingControl.Rating > 0)
             {
@@ -309,7 +316,7 @@ namespace ImageTag.Controls.Forms
                     int ourIndex = 0;
                     foreach (var childDir in parentDir.ChildDirectories)
                     {
-                        if (childDir.ID == selectedItem.ID)
+                        if (childDir.Id == selectedItem.Id)
                         {
                             if (up)
                             {
@@ -338,7 +345,7 @@ namespace ImageTag.Controls.Forms
                     SwapOrganizeDirectory(selectedItem, newItem);
                     
 
-                    parentDir.ChildDirectories = list;
+                    //parentDir.ChildDirectories = list;
 
 
                     OrganizeTree.FileTree.SelectItem(newItem);
@@ -356,8 +363,8 @@ namespace ImageTag.Controls.Forms
             var tempDir = new OrganizeDirectory()
             {
                 BackColor = dir2.BackColor,
-                ChildDirectories = dir2.ChildDirectories.ToList(),
-                Tags = dir2.Tags.ToList(),
+                //ChildDirectories = dir2.ChildDirectories.ToList(),
+                //Tags = dir2.Tags.ToList(),
                 Name = dir2.Name,
                 IgnoreParent = dir2.IgnoreParent,
                 OrTags = dir2.OrTags,
@@ -370,8 +377,8 @@ namespace ImageTag.Controls.Forms
 
             dir2.BackColor = dir1.BackColor;
             dir2.ForeColor = dir1.ForeColor;
-            dir2.ChildDirectories = dir1.ChildDirectories.ToList();
-            dir2.Tags = dir1.Tags.ToList();
+            //dir2.ChildDirectories = dir1.ChildDirectories.ToList();
+            //dir2.Tags = dir1.Tags.ToList();
             dir2.Name = dir1.Name;
             dir2.IgnoreParent = dir1.IgnoreParent;
             dir2.OrTags = dir1.OrTags;
@@ -383,8 +390,8 @@ namespace ImageTag.Controls.Forms
 
             dir1.BackColor = tempDir.BackColor;
             dir1.ForeColor = tempDir.ForeColor;
-            dir1.ChildDirectories = tempDir.ChildDirectories.ToList();
-            dir1.Tags = tempDir.Tags.ToList();
+            //dir1.ChildDirectories = tempDir.ChildDirectories.ToList();
+            //dir1.Tags = tempDir.Tags.ToList();
             dir1.Name = tempDir.Name;
             dir1.IgnoreParent = tempDir.IgnoreParent;
             dir1.OrTags = tempDir.OrTags;
@@ -414,11 +421,13 @@ namespace ImageTag.Controls.Forms
 
                     var newItem = list[ourIndex];
 
-                    if (newItem == selectedItem || newItem.ID == selectedItem.ID)
+                    if (newItem == selectedItem || newItem.Id == selectedItem.Id)
                         return;
 
                     SwapOrganizeDirectory(selectedItem, newItem);
-                    parentDir.ChildDirectories = list;
+                    
+                    //parentDir.ChildDirectories = list;
+
                     OrganizeTree.FileTree.SelectItem(newItem);
                 }
 

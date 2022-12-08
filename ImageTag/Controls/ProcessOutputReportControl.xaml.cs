@@ -16,7 +16,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
 using ImageTag.Controls.Windows;
-using ImageTag.Data;
 using Microsoft.Extensions.Logging;
 using Path = System.IO.Path;
 
@@ -30,12 +29,18 @@ namespace ImageTag.Controls
         protected ProcessOperation Process;
         protected ProcessOutputReport Report;
 
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
         private readonly ILogger<ProcessOutputReportControl> logger;
+
+        // TODO: Figure out how to inject dependencies
+        public ProcessOutputReportControl()
+        {
+
+        }
 
         public ProcessOutputReportControl(
             ILogger<ProcessOutputReportControl> logger,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.logger = logger;
             this.context = context;

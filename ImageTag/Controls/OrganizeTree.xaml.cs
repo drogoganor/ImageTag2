@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
-using ImageTag.Data;
 
 namespace ImageTag.Controls
 {
@@ -32,9 +31,15 @@ namespace ImageTag.Controls
         public event OrganizeTreeNodeMoveHandler OnNodeMoveTop;
         public event OrganizeTreeNodeMoveHandler OnNodeMoveBottom;
 
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
 
-        public OrganizeTree(ImageTagContext context)
+        // TODO: Figure out how to inject dependencies
+        public OrganizeTree()
+        {
+
+        }
+
+        public OrganizeTree(ImagetagContext context)
         {
             this.context = context;
             InitializeComponent();

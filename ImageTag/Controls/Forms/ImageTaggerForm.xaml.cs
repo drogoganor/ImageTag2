@@ -17,10 +17,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using ImageTag.Code;
-using ImageTag.Data;
 using ImageTag.Model;
 using Microsoft.Extensions.Logging;
-using Image = ImageTag.Data.Image;
 using Path = System.Windows.Shapes.Path;
 
 namespace ImageTag.Controls.Forms
@@ -31,7 +29,7 @@ namespace ImageTag.Controls.Forms
     public partial class ImageTaggerForm : UserControl
     {
         private readonly ILogger<ImageTaggerForm> logger;
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
         private readonly ImageTagSettings settings;
         private readonly Code.ImageTag imageTag;
         protected List<Image> IndexImages = new List<Image>();
@@ -41,9 +39,15 @@ namespace ImageTag.Controls.Forms
 
         protected List<TagModel> LastSelectedTags = new List<TagModel>();
 
+        // TODO: Figure out how to inject dependencies
+        public ImageTaggerForm()
+        {
+
+        }
+
         public ImageTaggerForm(
             ILogger<ImageTaggerForm> logger,
-            ImageTagContext context,
+            ImagetagContext context,
             ImageTagSettings settings,
             Code.ImageTag imageTag)
         {
@@ -221,10 +225,10 @@ namespace ImageTag.Controls.Forms
                 if (MultipleSelected)
                 {
 
-                    var tagIDs = tags.Select(x => (int)x.Tag.ID).ToArray();
+                    var tagIDs = tags.Select(x => (int)x.Tag.Id).ToArray();
 
                     // Tags removed
-                    var removedTags = LastSelectedTags.Where(x => !tagIDs.Contains((int)x.Tag.ID)).ToList();
+                    var removedTags = LastSelectedTags.Where(x => !tagIDs.Contains((int)x.Tag.Id)).ToList();
 
 
                     Util.RemoveImageTags(imageList, removedTags);

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using ImageTag.Code;
-using ImageTag.Data;
 
 namespace ImageTag.Model
 {

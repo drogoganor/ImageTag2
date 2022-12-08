@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>
 
         <TreeView x:Name="FileTree" HorizontalAlignment="Stretch" Margin="0,54,0,0" VerticalAlignment="Stretch"
-                  SelectedItemChanged="FileTree_OnSelectedItemChanged"
+
                   Grid.RowSpan="2">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">

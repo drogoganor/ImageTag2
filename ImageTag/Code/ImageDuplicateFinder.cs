@@ -1,5 +1,4 @@
 ﻿using ImageComparison;
-using ImageTag.Data;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,8 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Image = ImageTag.Data.Image;
 
 namespace ImageTag.Code
 {
@@ -24,12 +21,12 @@ namespace ImageTag.Code
 
 
         public ProcessOutputReport FileProcessData;
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
         private readonly ILogger logger;
 
         public ImageDuplicateFinder(
             ILogger logger,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.logger = logger;
             this.context = context;

@@ -14,10 +14,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ImageTag.Data;
 using ImageTag.Model;
 using Microsoft.Win32;
-using Image = ImageTag.Data.Image;
 using Color = System.Windows.Media.Color;
 using Size = System.Drawing.Size;
 using Microsoft.Extensions.Logging;
@@ -202,7 +200,7 @@ namespace ImageTag.Code
 
         public static void UpdateParentTagsRecursive(Image image, Tag tag)
         {
-            foreach (var parentTag in tag.ParentTags)
+            foreach (var parentTag in tag.Parents)
             {
                 if (!image.Tags.Contains(parentTag))
                     image.Tags.Add(parentTag);
@@ -211,7 +209,7 @@ namespace ImageTag.Code
             }
         }
 
-        public static void UpdateImageTags(ImageTagContext context, List<ImageFileThumbData> images, List<TagModel> tags, CancellationToken token, bool addOnly = false)
+        public static void UpdateImageTags(ImagetagContext context, List<ImageFileThumbData> images, List<TagModel> tags, CancellationToken token, bool addOnly = false)
         {
             int threadDivisor = 16;
             int threadListSize = images.Count/threadDivisor;
@@ -324,7 +322,7 @@ namespace ImageTag.Code
 
         private static BlockingCollection<Image> ThreadSafeImages;
 
-        public static void UpdateSingleImageTags(ImageTagContext context, ImageFileThumbData imageItem, List<TagModel> tags, bool addOnly = false, bool useSafeCollection = false)
+        public static void UpdateSingleImageTags(ImagetagContext context, ImageFileThumbData imageItem, List<TagModel> tags, bool addOnly = false, bool useSafeCollection = false)
         {
             // Get the image data
             if (imageItem != null)
@@ -351,7 +349,7 @@ namespace ImageTag.Code
                         UpdateParentTagsRecursive(newImageRecord, tag.Tag);
 
                         // Update recently used on tag
-                        tag.Tag.LastUsed = DateTime.Now;
+                        //tag.Tag.LastUsed = DateTime.Now;
                     }
 
                     imageItem.Image = newImageRecord;
@@ -374,8 +372,8 @@ namespace ImageTag.Code
                     // Remove tags that we don't have selected
                     if (!addOnly)
                     {
-                        var selectedTagIDs = tags.Select(x => (int)x.Tag.ID);
-                        var removedList = existingImage.Tags.Where(x => !selectedTagIDs.Contains((int)x.ID)).ToArray();
+                        var selectedTagIDs = tags.Select(x => (int)x.Tag.Id);
+                        var removedList = existingImage.Tags.Where(x => !selectedTagIDs.Contains((int)x.Id)).ToArray();
                         foreach (var removeTag in removedList)
                         {
                             existingImage.Tags.Remove(removeTag);
@@ -393,7 +391,7 @@ namespace ImageTag.Code
                             UpdateParentTagsRecursive(existingImage, tag.Tag);
 
                             // Update recently used on tag
-                            tag.Tag.LastUsed = DateTime.Now;
+                            //tag.Tag.LastUsed = DateTime.Now;
                         }
 
                     }
@@ -445,7 +443,7 @@ namespace ImageTag.Code
                 {
                     UpdateParentTagsRecursive(image, tag);
                     // Update recently used on tag
-                    tag.LastUsed = DateTime.Now;
+                    //tag.LastUsed = DateTime.Now;
                 }
             }
         }
@@ -470,7 +468,7 @@ namespace ImageTag.Code
             return false;
         }
 
-        public static void UpdateImageRating(ImageTagContext context, List<ImageFileThumbData> images, int rating)
+        public static void UpdateImageRating(ImagetagContext context, List<ImageFileThumbData> images, int rating)
         {
 
             // Go through selected files and add tags

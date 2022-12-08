@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:ImageTag"
              Startup="OnStartup">
     <Application.Resources>
-         
+        <ResourceDictionary>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

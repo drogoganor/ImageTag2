@@ -27,6 +27,12 @@ namespace ImageTag.Controls.Forms
     {
         private readonly ImageTagSettings settings;
 
+        // TODO: Figure out how to inject dependencies
+        public SettingsForm()
+        {
+
+        }
+
         public SettingsForm(ImageTagSettings settings)
         {
             this.settings = settings;

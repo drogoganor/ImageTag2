@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
-using ImageTag.Data;
 using ImageTag.Model;
 
 namespace ImageTag.Controls
@@ -34,12 +33,18 @@ namespace ImageTag.Controls
         public List<TagModel> AllTags = new List<TagModel>();
 
         public bool IsUpdating = false;
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
         private readonly Code.ImageTag imageTag;
+
+        // TODO: Figure out how to inject dependencies
+        public TagSelectControl()
+        {
+
+        }
 
         public TagSelectControl(
             Code.ImageTag imageTag,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.context = context;
             this.imageTag = imageTag;
@@ -104,9 +109,14 @@ namespace ImageTag.Controls
 
         protected IEnumerable<TagModel> FilterToRecentlyUsed(IEnumerable<TagModel> tags)
         {
-            tags = tags.Where(x => x.Tag.LastUsed.HasValue)
+            tags = tags
+
+
+                //.Where(x => x.Tag.LastUsed.HasValue)
+
+
                 //.OrderBy(x => (TagType) x.Tag.TagType)
-                .OrderByDescending(x => x.Tag.LastUsed.Value);
+                .OrderByDescending(x => x.Tag.LastUsed);
             return tags;
         }
 
@@ -153,14 +163,14 @@ namespace ImageTag.Controls
             // If we have an image record, load selected tags
             if (data.Image != null)
             {
-                var tagIDs = data.Image.Tags.Select(x => (int)x.ID);
+                var tagIDs = data.Image.Tags.Select(x => (int)x.Id);
 
                 var itemList = AllTags;
                 if (itemList != null)
                 {
                     foreach (var imageTag in itemList)
                     {
-                        if (tagIDs.Contains((int)imageTag.Tag.ID))
+                        if (tagIDs.Contains((int)imageTag.Tag.Id))
                         {
                             TagViewer.SelectedItems.Add(imageTag);
                         }
@@ -211,8 +221,8 @@ namespace ImageTag.Controls
                     firstTags = firstTags.Intersect(tags);
                 }
 
-                var commonTagIDs = firstTags.Select(x => (int) x.ID).ToArray();
-                results = AllTags.Where(x => commonTagIDs.Contains((int) x.Tag.ID)).ToList();
+                var commonTagIDs = firstTags.Select(x => (int) x.Id).ToArray();
+                results = AllTags.Where(x => commonTagIDs.Contains((int) x.Tag.Id)).ToList();
 
                 foreach (var imageTag in results)
                 {

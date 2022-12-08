@@ -15,7 +15,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
-using ImageTag.Data;
 using ImageTag.Model;
 using Microsoft.Extensions.Logging;
 
@@ -40,11 +39,18 @@ namespace ImageTag.Controls.Forms
         protected List<TagModel> LastSelectedTags = new List<TagModel>();
 
         private readonly ILogger<ImageExplorerForm> logger;
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
+
+
+        // TODO: Figure out how to inject dependencies
+        public ImageExplorerForm()
+        {
+
+        }
 
         public ImageExplorerForm(
             ILogger<ImageExplorerForm> logger,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.logger = logger;
             this.context = context;
@@ -144,10 +150,10 @@ namespace ImageTag.Controls.Forms
             
                 if (MultipleSelected)
                 {
-                    var tagIDs = tags.Select(x => (int)x.Tag.ID).ToArray();
+                    var tagIDs = tags.Select(x => (int)x.Tag.Id).ToArray();
 
                     // Tags removed
-                    var removedTags = LastSelectedTags.Where(x => !tagIDs.Contains((int)x.Tag.ID)).ToList();
+                    var removedTags = LastSelectedTags.Where(x => !tagIDs.Contains((int)x.Tag.Id)).ToList();
 
                     Util.RemoveImageTags(imageList, removedTags);
                     Util.UpdateImageTags(context, imageList, tags, token, addOnly: true);
@@ -189,7 +195,7 @@ namespace ImageTag.Controls.Forms
                 var searchCollection = context.Images
                     .Where(images =>
                     matchingTags.All(t =>
-                                images.Tags.Any(mt => mt.ID == t.ID)));
+                                images.Tags.Any(mt => mt.Id == t.Id)));
 
                 var thumbDataCollection = new List<ImageFileThumbData>();
                 foreach (var image in searchCollection)
@@ -216,7 +222,7 @@ namespace ImageTag.Controls.Forms
         private void SearchButton_OnClick(object sender, RoutedEventArgs e)
         {
             // Get matching tags
-            var matchingTags = SearchTermList.Select(x => (int)x.Tag.ID).ToArray();
+            var matchingTags = SearchTermList.Select(x => (int)x.Tag.Id).ToArray();
 
             var thumbDataCollection = new List<ImageFileThumbData>();
 
@@ -228,8 +234,8 @@ namespace ImageTag.Controls.Forms
 
                 // Tags AND/OR filtering
                 .Where(images =>
-                (!AnyMatch && matchingTags.All(t => images.Tags.Any(mt => (int)mt.ID == t))) || 
-                (AnyMatch && matchingTags.Any(t => images.Tags.Any(mt => (int)mt.ID == t))))
+                (!AnyMatch && matchingTags.All(t => images.Tags.Any(mt => (int)mt.Id == t))) || 
+                (AnyMatch && matchingTags.Any(t => images.Tags.Any(mt => (int)mt.Id == t))))
 
                 // Minimum rating filter
                 .Where(images => (unratedOnly && !images.Rating.HasValue) ||

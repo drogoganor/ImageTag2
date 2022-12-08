@@ -9,11 +9,9 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ImageTag.Controls;
-using ImageTag.Data;
 using ImageTag.Model;
 using Microsoft.Extensions.Logging;
 using Color = System.Windows.Media.Color;
-using Image = ImageTag.Data.Image;
 
 namespace ImageTag.Code
 {
@@ -34,7 +32,7 @@ namespace ImageTag.Code
         public const string ImageTagDbName = "imagetag.db";
         public const string SettingsName = "Settings.xml";
 
-        public ImageTagContext Context;
+        public ImagetagContext Context;
 
         public ImageTagSettings Settings;
         public ILogger<ImageTag> logger;
@@ -45,7 +43,7 @@ namespace ImageTag.Code
 
         public ImageTag(
             ILogger<ImageTag> logger,
-            ImageTagContext context,
+            ImagetagContext context,
             ImageTagSettings settings)
         {
             Context = context;
@@ -303,7 +301,7 @@ namespace ImageTag.Code
 
 
             // Find all items that have our tags
-            var tags = dir.Tags.Select(x => (int) x.ID).ToList();
+            var tags = dir.Tags.Select(x => (int) x.Id).ToList();
             if (tags.Count > 0)
             {
                 var imageResults = new List<Image>();
@@ -326,19 +324,19 @@ namespace ImageTag.Code
                 if (dir.TheseTagsOnly != 0)
                 {
                     imageResults =
-                        cumulativeQuery.Where(y => tags.All(t => y.Tags.All(mt => (int) mt.ID == t))).ToList();
+                        cumulativeQuery.Where(y => tags.All(t => y.Tags.All(mt => (int) mt.Id == t))).ToList();
                 }
                 else
                 {
                     if (dir.OrTags != 0) // Get OR
                     {
                         imageResults =
-                            cumulativeQuery.Where(y => tags.Any(t => y.Tags.Any(mt => (int) mt.ID == t))).ToList();
+                            cumulativeQuery.Where(y => tags.Any(t => y.Tags.Any(mt => (int) mt.Id == t))).ToList();
                     }
                     else
                     {
                         imageResults = // Get AND
-                            cumulativeQuery.Where(y => tags.All(t => y.Tags.Any(mt => (int) mt.ID == t))).ToList();
+                            cumulativeQuery.Where(y => tags.All(t => y.Tags.Any(mt => (int) mt.Id == t))).ToList();
                     }
 
                 }
@@ -349,7 +347,7 @@ namespace ImageTag.Code
                     {
                         var targetPath = Path.Combine(fullPath, Path.GetFileName(imageResult.Path));
 
-                        string id = imageResult.ID.ToString("D0");
+                        string id = imageResult.Id.ToString("D0");
                         var organizeFile = GetOrganizeFileByID(id);
                         if (organizeFile == null)
                         {
@@ -417,7 +415,7 @@ namespace ImageTag.Code
 
 
             // Find all items that have our tags
-            var tags = dir.Tags.Select(x => (int) x.ID).ToList();
+            var tags = dir.Tags.Select(x => (int) x.Id).ToList();
             if (tags.Count > 0)
             {
                 var imageResults = new List<Image>();
@@ -439,19 +437,19 @@ namespace ImageTag.Code
                 if (dir.TheseTagsOnly != 0)
                 {
                     imageResults =
-                        cumulativeQuery.Where(y => tags.All(t => y.Tags.All(mt => (int) mt.ID == t))).ToList();
+                        cumulativeQuery.Where(y => tags.All(t => y.Tags.All(mt => (int) mt.Id == t))).ToList();
                 }
                 else
                 {
                     if (dir.OrTags != 0) // Get or
                     {
                         imageResults =
-                            cumulativeQuery.Where(y => tags.Any(t => y.Tags.Any(mt => (int) mt.ID == t))).ToList();
+                            cumulativeQuery.Where(y => tags.Any(t => y.Tags.Any(mt => (int) mt.Id == t))).ToList();
                     }
                     else
                     {
                         imageResults = // Get and
-                            cumulativeQuery.Where(y => tags.All(t => y.Tags.Any(mt => (int) mt.ID == t))).ToList();
+                            cumulativeQuery.Where(y => tags.All(t => y.Tags.Any(mt => (int) mt.Id == t))).ToList();
                     }
 
                 }

@@ -18,7 +18,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ImageTag.Code;
-using ImageTag.Data;
 using ImageTag.Model;
 using Microsoft.Extensions.Logging;
 
@@ -41,12 +40,18 @@ namespace ImageTag.Controls
 
         private readonly ILogger<FileExplorer> logger;
         private readonly ImageTagSettings settings;
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
+
+        // TODO: Figure out how to inject dependencies
+        public FileExplorer()
+        {
+
+        }
 
         public FileExplorer(
             ILogger<FileExplorer> logger,
             ImageTagSettings settings,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.logger = logger;
             this.settings = settings;

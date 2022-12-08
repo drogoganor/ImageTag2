@@ -13,7 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
-using ImageTag.Data;
 using ImageTag.Model;
 
 namespace ImageTag.Controls.Forms
@@ -29,12 +28,18 @@ namespace ImageTag.Controls.Forms
 
         protected List<TagModel> Tags;
         protected Tag SelectedTag;
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
         private readonly Code.ImageTag imageTag;
+
+        // TODO: Figure out how to inject dependencies
+        public TagManagerForm()
+        {
+
+        }
 
         public TagManagerForm(
             Code.ImageTag imageTag,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.context = context;
             this.imageTag = imageTag;
@@ -102,7 +107,7 @@ namespace ImageTag.Controls.Forms
 
         public void UpdateParentsForTag(TagModel tag)
         {
-            var parents = tag.Tag.ParentTags.Select(x => x.Name).ToArray();
+            var parents = tag.Tag.Parents.Select(x => x.Name).ToArray();
             var fullString = String.Join(", ", parents);
             ParentsLabel.Content = fullString;
         }
@@ -110,14 +115,14 @@ namespace ImageTag.Controls.Forms
 
         private void SelectChildTagsForTag(TagModel tag)
         {
-            var selectedIDs = tag.Tag.ChildTags.Select(x => (int) x.ID).ToList();
+            var selectedIDs = tag.Tag.Children.Select(x => (int) x.Id).ToList();
 
             var childTags = ChildTagList.ItemsSource as IEnumerable<TagModel>;
             if (childTags != null)
             {
                 ChildTagList.UnselectAll();
 
-                var selectedTags = childTags.Where(x => selectedIDs.Contains((int) x.Tag.ID));
+                var selectedTags = childTags.Where(x => selectedIDs.Contains((int) x.Tag.Id));
 
                 foreach (var selectedTag in selectedTags)
                 {
@@ -159,7 +164,7 @@ namespace ImageTag.Controls.Forms
             if (SelectedTag != null && !String.IsNullOrEmpty(proposedname))
             {
                 // First check there's not another one by this name
-                if (Tags.Any(x => x.Tag.Name == proposedname && x.Tag.ID != SelectedTag.ID))
+                if (Tags.Any(x => x.Tag.Name == proposedname && x.Tag.Id != SelectedTag.Id))
                 {
                     // Already exists
                     MessageBox.Show("There's already a tag by this name.");
@@ -176,7 +181,7 @@ namespace ImageTag.Controls.Forms
                 foreach (var selectedItem in ChildTagList.SelectedItems)
                 {
                     var tagItem = selectedItem as TagModel;
-                    SelectedTag.ChildTags.Add(tagItem.Tag);
+                    SelectedTag.Children.Add(tagItem.Tag);
                 }
 
 

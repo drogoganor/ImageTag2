@@ -1,15 +1,19 @@
+﻿using System;
 using System.Collections.Generic;
 
-namespace ImageTag.Data
-{
-    public class Image
-    {
-        public long ID { get; set; }
-        public string Path { get; set; }
-        public string Checksum { get; set; }
-        public long? Rating { get; set; }
-        public long? Explicit { get; set; }
+namespace ImageTag;
 
-        public List<Tag> Tags { get; set; } = new();
-    }
+public partial class Image
+{
+    public long Id { get; set; }
+
+    public string Path { get; set; }
+
+    public string Checksum { get; set; }
+
+    public long? Rating { get; set; }
+
+    public long? Explicit { get; set; }
+
+    public virtual ICollection<Tag> Tags { get; } = new List<Tag>();
 }

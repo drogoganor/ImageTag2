@@ -33,6 +33,13 @@ namespace ImageTag.Controls
 
         private readonly ImageTagSettings settings;
 
+
+        // TODO: Figure out how to inject dependencies
+        public ImageInfoControl()
+        {
+
+        }
+
         public ImageInfoControl(
             ImageTagSettings settings)
         {

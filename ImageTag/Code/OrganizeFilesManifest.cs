@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageTag.Data;
 
 namespace ImageTag.Code
 {
@@ -30,7 +29,7 @@ namespace ImageTag.Code
         
         public List<OrganizeOperation> Operations = new List<OrganizeOperation>();
 
-        public string ID { get { return Image.ID.ToString("D0"); } }
+        public string ID { get { return Image.Id.ToString("D0"); } }
 
         public void AddOperation(OrganizeOperation operation)
         {

@@ -19,9 +19,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ImageTag;
 using ImageTag.Code;
-using ImageTag.Data;
 using ImageTag.Model;
-using Image = ImageTag.Data.Image;
 using Path = System.IO.Path;
 
 namespace ImageTag
@@ -33,12 +31,12 @@ namespace ImageTag
     {
         public ObservableCollection<ImageTagDispatchItem> DispatchItems { get; set; }
         public DispatcherTimer TaskTimer;
-        private readonly ImageTagContext context;
+        private readonly ImagetagContext context;
         private readonly Code.ImageTag imageTag;
 
         public MainWindow(
             Code.ImageTag imageTag,
-            ImageTagContext context)
+            ImagetagContext context)
         {
             this.context = context;
             this.imageTag = imageTag;

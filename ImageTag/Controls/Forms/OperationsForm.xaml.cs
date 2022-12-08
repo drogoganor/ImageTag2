@@ -14,9 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ImageTag.Code;
-using ImageTag.Data;
-using Image = ImageTag.Data.Image;
-using Path = System.IO.Path;
 
 namespace ImageTag.Controls.Forms
 {
@@ -29,7 +26,12 @@ namespace ImageTag.Controls.Forms
 
         public event OperationsCommenceMoveFilesHandler OnStartFileMove;
         private Code.ImageTag imageTag;
-        
+
+        // TODO: Figure out how to inject dependencies
+        public OperationsForm()
+        {
+
+        }
 
         public OperationsForm(Code.ImageTag imageTag)
         {
