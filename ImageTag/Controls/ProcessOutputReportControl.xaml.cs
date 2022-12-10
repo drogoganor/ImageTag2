@@ -30,20 +30,12 @@ namespace ImageTag.Controls
         protected ProcessOutputReport Report;
 
         private readonly ImagetagContext context;
-        private readonly ILogger<ProcessOutputReportControl> logger;
+        private readonly ILogger logger;
 
-        // TODO: Figure out how to inject dependencies
         public ProcessOutputReportControl()
         {
-
-        }
-
-        public ProcessOutputReportControl(
-            ILogger<ProcessOutputReportControl> logger,
-            ImagetagContext context)
-        {
-            this.logger = logger;
-            this.context = context;
+            logger = App.Current.ViewModel.Logger;
+            context = App.Current.ViewModel.Context;
             InitializeComponent();
         }
 

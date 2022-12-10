@@ -32,10 +32,10 @@ namespace ImageTag
         public ObservableCollection<ImageTagDispatchItem> DispatchItems { get; set; }
         public DispatcherTimer TaskTimer;
         private readonly ImagetagContext context;
-        private readonly Code.ImageTag imageTag;
+        private readonly ViewModel.ImageTagViewModel imageTag;
 
         public MainWindow(
-            Code.ImageTag imageTag,
+            ViewModel.ImageTagViewModel imageTag,
             ImagetagContext context)
         {
             this.context = context;

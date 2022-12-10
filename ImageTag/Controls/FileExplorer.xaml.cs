@@ -38,24 +38,15 @@ namespace ImageTag.Controls
 
         protected ScrollBar ScrollBar;
 
-        private readonly ILogger<FileExplorer> logger;
+        private readonly ILogger logger;
         private readonly ImageTagSettings settings;
         private readonly ImagetagContext context;
 
-        // TODO: Figure out how to inject dependencies
         public FileExplorer()
         {
-
-        }
-
-        public FileExplorer(
-            ILogger<FileExplorer> logger,
-            ImageTagSettings settings,
-            ImagetagContext context)
-        {
-            this.logger = logger;
-            this.settings = settings;
-            this.context = context;
+            logger = App.Current.ViewModel.Logger;
+            settings = App.Current.ViewModel.Settings;
+            context = App.Current.ViewModel.Context;
             InitializeComponent();
 
             FileViewer.Loaded += (sender, e) =>

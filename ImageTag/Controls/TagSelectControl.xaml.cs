@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTag.Code;
 using ImageTag.Model;
 
 namespace ImageTag.Controls
@@ -34,20 +33,12 @@ namespace ImageTag.Controls
 
         public bool IsUpdating = false;
         private readonly ImagetagContext context;
-        private readonly Code.ImageTag imageTag;
+        private readonly ViewModel.ImageTagViewModel imageTag;
 
-        // TODO: Figure out how to inject dependencies
         public TagSelectControl()
         {
-
-        }
-
-        public TagSelectControl(
-            Code.ImageTag imageTag,
-            ImagetagContext context)
-        {
-            this.context = context;
-            this.imageTag = imageTag;
+            context = App.Current.ViewModel.Context;
+            imageTag = App.Current.ViewModel;
             InitializeComponent();
         }
 
@@ -109,14 +100,14 @@ namespace ImageTag.Controls
 
         protected IEnumerable<TagModel> FilterToRecentlyUsed(IEnumerable<TagModel> tags)
         {
-            tags = tags
+            //tags = tags
 
 
                 //.Where(x => x.Tag.LastUsed.HasValue)
 
 
                 //.OrderBy(x => (TagType) x.Tag.TagType)
-                .OrderByDescending(x => x.Tag.LastUsed);
+                //.OrderByDescending(x => x.Tag.LastUsed);
             return tags;
         }
 

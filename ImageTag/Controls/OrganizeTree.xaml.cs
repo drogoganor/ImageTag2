@@ -33,17 +33,11 @@ namespace ImageTag.Controls
 
         private readonly ImagetagContext context;
 
-        // TODO: Figure out how to inject dependencies
         public OrganizeTree()
         {
-
-        }
-
-        public OrganizeTree(ImagetagContext context)
-        {
-            this.context = context;
+            context = App.Current.ViewModel.Context;
             InitializeComponent();
-		}
+        }
 
 
         public void Initialize()

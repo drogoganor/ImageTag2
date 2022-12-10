@@ -38,14 +38,17 @@ namespace ImageTag.Controls.Forms
         protected bool IsUpdating = false;
         protected List<TagModel> LastSelectedTags = new List<TagModel>();
 
-        private readonly ILogger<ImageExplorerForm> logger;
+        private readonly ILogger logger;
         private readonly ImagetagContext context;
 
-
-        // TODO: Figure out how to inject dependencies
         public ImageExplorerForm()
         {
+            logger = App.Current.ViewModel.Logger;
+            context = App.Current.ViewModel.Context;
 
+            InitializeComponent();
+
+            TagSelectControl.RatingControl.IsEnabled = false;
         }
 
         public ImageExplorerForm(

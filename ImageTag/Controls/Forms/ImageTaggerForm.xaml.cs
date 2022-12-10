@@ -28,10 +28,10 @@ namespace ImageTag.Controls.Forms
     /// </summary>
     public partial class ImageTaggerForm : UserControl
     {
-        private readonly ILogger<ImageTaggerForm> logger;
+        private readonly ILogger logger;
         private readonly ImagetagContext context;
         private readonly ImageTagSettings settings;
-        private readonly Code.ImageTag imageTag;
+        private readonly ViewModel.ImageTagViewModel imageTag;
         protected List<Image> IndexImages = new List<Image>();
 
         protected bool MultipleSelected = false;
@@ -39,22 +39,12 @@ namespace ImageTag.Controls.Forms
 
         protected List<TagModel> LastSelectedTags = new List<TagModel>();
 
-        // TODO: Figure out how to inject dependencies
         public ImageTaggerForm()
         {
-
-        }
-
-        public ImageTaggerForm(
-            ILogger<ImageTaggerForm> logger,
-            ImagetagContext context,
-            ImageTagSettings settings,
-            Code.ImageTag imageTag)
-        {
-            this.logger = logger;
-            this.settings = settings;
-            this.context = context;
-            this.imageTag = imageTag;
+            logger = App.Current.ViewModel.Logger;
+            settings = App.Current.ViewModel.Settings;
+            context = App.Current.ViewModel.Context;
+            imageTag = App.Current.ViewModel;
             InitializeComponent();
         }
 

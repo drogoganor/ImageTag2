@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ImageTag.Code;
 using ImageTag.Model;
 
 namespace ImageTag.Controls.Forms
@@ -29,20 +28,11 @@ namespace ImageTag.Controls.Forms
         protected List<TagModel> Tags;
         protected Tag SelectedTag;
         private readonly ImagetagContext context;
-        private readonly Code.ImageTag imageTag;
+        //private readonly ViewModel.ImageTagViewModel imageTag;
 
-        // TODO: Figure out how to inject dependencies
         public TagManagerForm()
         {
-
-        }
-
-        public TagManagerForm(
-            Code.ImageTag imageTag,
-            ImagetagContext context)
-        {
-            this.context = context;
-            this.imageTag = imageTag;
+            context = App.Current.ViewModel.Context;
             InitializeComponent();
         }
 

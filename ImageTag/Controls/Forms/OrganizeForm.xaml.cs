@@ -24,23 +24,12 @@ namespace ImageTag.Controls.Forms
     {
         public List<TagModel> SearchTermList = new List<TagModel>();
         private readonly ImagetagContext context;
-        private readonly Code.ImageTag imageTag;
+        private readonly ViewModel.ImageTagViewModel imageTag;
 
-        // TODO: Figure out how to inject dependencies
         public OrganizeForm()
         {
-
-        }
-
-        public OrganizeForm(
-            Code.ImageTag imageTag,
-            ImagetagContext context)
-        {
-            this.context = context;
-            this.imageTag = imageTag;
+            context = App.Current.ViewModel.Context;
             InitializeComponent();
-
-            //ForeColorPickerRow.SetColor(Colors.Black);
         }
 
         public void Initialize()

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using ImageTag.ViewModel;
 
 namespace ImageTag
 {
@@ -18,10 +19,14 @@ namespace ImageTag
     /// </summary>
     public partial class App : Application
     {
+        // https://blogs.msmvps.com/bsonnino/2021/02/13/implementing-the-mvvm-pattern-in-a-wpf-app-with-the-mvvm-community-toolkit/
+        public new static App Current => (App)Application.Current;
+        public static IHost AppHost { get; private set; }
+
+        public ImageTagViewModel ViewModel => AppHost.Services.GetService<ImageTagViewModel>();
+
         private IConfiguration configuration;
         private ServiceProvider serviceProvider;
-
-        public static IHost? AppHost { get; private set; }
 
         public App()
         {
@@ -65,11 +70,11 @@ namespace ImageTag
             });
 
             services.AddSingleton<ImageTagSettings>(LoadSettings());
-            services.AddSingleton<ImageTag.Code.ImageTag>();
+            services.AddSingleton<ViewModel.ImageTagViewModel>();
             services.AddTransient<MainWindow>();
         }
 
-        protected override async void OnStartup(StartupEventArgs e)
+        private async void OnStartup(object sender, StartupEventArgs e)
         {
             //var mainWindow = serviceProvider.GetService<MainWindow>();
             //mainWindow.Show();
@@ -79,19 +84,17 @@ namespace ImageTag
 
             var startupForm = AppHost.Services.GetRequiredService<MainWindow>();
             startupForm.Show();
-
-            base.OnStartup(e);
         }
 
-        protected override async void OnExit(ExitEventArgs e)
-        {
-            using (host)
-            {
-                await host.StopAsync(TimeSpan.FromSeconds(5));
-            }
+        //protected override async void OnExit(ExitEventArgs e)
+        //{
+        //    using (AppHost)
+        //    {
+        //        await AppHost.StopAsync(TimeSpan.FromSeconds(5));
+        //    }
 
-            base.OnExit(e);
-        }
+        //    base.OnExit(e);
+        //}
 
         private ImageTagSettings LoadSettings()
         {

@@ -17,7 +17,7 @@
 			HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TabItem Header="Image Tagging">
                 <Grid>
-                    <Forms:ImageTaggerForm  x:Name="ImageTaggerForm" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch"/>
+                    <Forms:ImageTaggerForm x:Name="ImageTaggerForm" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch"/>
 
                 </Grid>
             </TabItem>

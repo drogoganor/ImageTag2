@@ -25,17 +25,11 @@ namespace ImageTag.Controls.Forms
         public delegate void OperationsCommenceMoveFilesHandler();
 
         public event OperationsCommenceMoveFilesHandler OnStartFileMove;
-        private Code.ImageTag imageTag;
+        private ViewModel.ImageTagViewModel imageTag;
 
-        // TODO: Figure out how to inject dependencies
         public OperationsForm()
         {
-
-        }
-
-        public OperationsForm(Code.ImageTag imageTag)
-        {
-            this.imageTag = imageTag;
+            imageTag = App.Current.ViewModel;
             InitializeComponent();
         }
 
