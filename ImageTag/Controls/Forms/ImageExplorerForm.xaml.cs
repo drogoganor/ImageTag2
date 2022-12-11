@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ImageTag.Code;
 using ImageTag.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ImageTag.Controls.Forms
@@ -39,11 +31,13 @@ namespace ImageTag.Controls.Forms
         protected List<TagModel> LastSelectedTags = new List<TagModel>();
 
         private readonly ILogger logger;
+        private readonly ImageTagSettings settings;
         private readonly ImagetagContext context;
 
         public ImageExplorerForm()
         {
             logger = App.Current.ViewModel.Logger;
+            settings = App.Current.ViewModel.Settings;
             context = App.Current.ViewModel.Context;
 
             InitializeComponent();
@@ -234,6 +228,8 @@ namespace ImageTag.Controls.Forms
 
             // Any image that has all of the tags fulfilled
             var searchCollection = context.Images
+                .Include(x => x.Tags)
+                .AsEnumerable()
 
                 // Tags AND/OR filtering
                 .Where(images =>
@@ -256,8 +252,8 @@ namespace ImageTag.Controls.Forms
                     Image = image,
                 };
 
-                //var thumbImage = Util.GetThumbnailForImage(image.Path, ThumbWidth);
-                //newThumbData.ImageSource = thumbImage;
+                var thumbImage = Util.GetThumbnailForImage(settings, logger, image.Path, ThumbWidth);
+                newThumbData.ImageSource = thumbImage;
 
                 thumbDataCollection.Add(newThumbData);
             }

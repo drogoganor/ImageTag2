@@ -27,10 +27,9 @@ namespace ImageTag.Controls
     {
         private readonly ImageTagSettings settings;
 
-        public ImageThumbnailControl(ImageTagSettings settings)
+        public ImageThumbnailControl()
         {
-            this.settings = settings;
-
+            this.settings = App.Current.ViewModel.Settings;
             InitializeComponent();
         }
 

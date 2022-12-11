@@ -2,5 +2,98 @@
   "PortableMode": true,
   "TempDirectoryName": "temp",
   "ImageTagCacheFolderName": "ImageTag",
-  "DefaultDirectory": "T:\\"
+  "DefaultDirectory": "T:\\",
+  "TagCategoryColors": [
+    {
+      "TagType": "Descriptor",
+      "FontColor": {
+        "A": 255,
+        "R": 0,
+        "G": 0,
+        "B": 0,
+        "ScA": 1,
+        "ScR": 0,
+        "ScG": 0,
+        "ScB": 0
+      }
+    },
+    {
+      "TagType": "Subject",
+      "FontColor": {
+        "A": 255,
+        "R": 255,
+        "G": 140,
+        "B": 0,
+        "ScA": 1,
+        "ScR": 1,
+        "ScG": 0.262250662,
+        "ScB": 0
+      }
+    },
+    {
+      "TagType": "Event",
+      "FontColor": {
+        "A": 255,
+        "R": 0,
+        "G": 0,
+        "B": 255,
+        "ScA": 1,
+        "ScR": 0,
+        "ScG": 0,
+        "ScB": 1
+      }
+    },
+    {
+      "TagType": "Series",
+      "FontColor": {
+        "A": 255,
+        "R": 220,
+        "G": 20,
+        "B": 60,
+        "ScA": 1,
+        "ScR": 0.7156935,
+        "ScG": 0.00699541,
+        "ScB": 0.045186203
+      }
+    },
+    {
+      "TagType": "Artist",
+      "FontColor": {
+        "A": 255,
+        "R": 147,
+        "G": 112,
+        "B": 219,
+        "ScA": 1,
+        "ScR": 0.291770637,
+        "ScG": 0.162029371,
+        "ScB": 0.708375752
+      }
+    }
+  ],
+  "Extensions": [
+    {
+      "Extension": "*.jpg",
+      "ViewerProgram": "C:\\Program Files\\IrfanView\\i_view64.exe"
+    },
+    {
+      "Extension": "*.jpeg",
+      "ViewerProgram": "C:\\Program Files\\IrfanView\\i_view64.exe"
+    },
+    {
+      "Extension": "*.png",
+      "ViewerProgram": "C:\\Program Files\\IrfanView\\i_view64.exe"
+    },
+    {
+      "Extension": "*.gif",
+      "ViewerProgram": "C:\\Program Files\\IrfanView\\i_view64.exe"
+    },
+    {
+      "Extension": "*.bmp",
+      "ViewerProgram": "C:\\Program Files\\IrfanView\\i_view64.exe"
+    },
+    {
+      "Extension": "*.webm",
+      "ViewerProgram": "C:\\Program Files\\MPC-HC\\mpc-hc64.exe"
+    }
+  ]
 }

@@ -72,7 +72,10 @@ namespace ImageTag.Controls
             foreach (var tagModel in tags)
             {
                 var type = (TagType)tagModel.Tag.TagType;
-                //tagModel.HexColor = imageTag.GetColorForTagType(type).ToHexString();
+
+                //tagModel.HexColor = "#FF000000";
+
+                tagModel.HexColor = imageTag.GetColorForTagType(type).ToString();
             }
             return tags;
         }

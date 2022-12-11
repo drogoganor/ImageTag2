@@ -13,7 +13,7 @@ public partial class Tag
 
     public long TagType { get; set; }
 
-    public byte[] LastUsed { get; set; }
+    public DateTime? LastUsed { get; set; }
 
     public virtual ICollection<Tag> Children { get; } = new List<Tag>();
 

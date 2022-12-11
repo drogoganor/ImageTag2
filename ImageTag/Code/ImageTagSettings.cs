@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.IO;
 using System.Xml.Serialization;
 using ImageTag.Model;
+using System.Text.Json.Serialization;
 
 namespace ImageTag.Code
 {
@@ -113,6 +114,7 @@ namespace ImageTag.Code
     [Serializable]
     public class TagCategoryColor
     {
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TagType TagType { get; set; }
         public Color FontColor { get; set; }
     }

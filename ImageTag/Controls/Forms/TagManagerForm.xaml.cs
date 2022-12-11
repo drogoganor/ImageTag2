@@ -28,11 +28,12 @@ namespace ImageTag.Controls.Forms
         protected List<TagModel> Tags;
         protected Tag SelectedTag;
         private readonly ImagetagContext context;
-        //private readonly ViewModel.ImageTagViewModel imageTag;
+        private readonly ViewModel.ImageTagViewModel imageTag;
 
         public TagManagerForm()
         {
             context = App.Current.ViewModel.Context;
+            imageTag = App.Current.ViewModel;
             InitializeComponent();
         }
 
@@ -60,8 +61,7 @@ namespace ImageTag.Controls.Forms
             foreach (var tagModel in Tags)
             {
                 var type = (TagType) tagModel.Tag.TagType;
-
-                //tagModel.HexColor = imageTag.GetColorForTagType(type); //.ToHexString();
+                tagModel.HexColor = imageTag.GetColorForTagType(type).ToString();
             }
 
             TagList.ItemsSource = Tags;
@@ -125,7 +125,6 @@ namespace ImageTag.Controls.Forms
 
         private void ChildTagList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            /*
             var selectedItem = TagList.SelectedItem;
             var tag = selectedItem as TagModel;
 
@@ -136,14 +135,7 @@ namespace ImageTag.Controls.Forms
                 NameTextBox.Text = SelectedTag.Name;
                 DescriptionTextBox.Text = SelectedTag.Description;
                 TypeCombo.SelectedIndex = (int)SelectedTag.TagType;
-            }*/
-
-
-            // TODO
-
-
-
-
+            }
         }
 
         private void SaveButton_OnClick(object sender, RoutedEventArgs e)
